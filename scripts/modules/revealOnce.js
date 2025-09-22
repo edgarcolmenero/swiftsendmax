@@ -6,7 +6,7 @@
 //   data-reveal-stagger="80" (ms; if element is a container, children must have [data-reveal-child])
 // Respects reduced motion: reveals immediately.
 
-import { onEnterBatch } from './utils/observe.js';
+import { onEnterBatch } from '../utils/observe.js';
 
 const SELECTOR = '[data-reveal]';
 const CHILD_SELECTOR = '[data-reveal-child]';
