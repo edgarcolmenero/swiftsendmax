@@ -1,0 +1,153 @@
+/* =========================================
+   SwiftSendMax 1.0 — COMPONENTS CSS
+   Buttons, cards, pills, nav, badges, forms
+   ========================================= */
+
+/* ------- BUTTONS ------- */
+.btn {
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+  .btn-primary { color: #fff; }
+  .btn-ghost { color: var(--text); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  
+  /* Magnetic hover handled in JS, but add smooth base */
+  [data-magnetic] { transition: transform var(--dur-base) var(--elevate); }
+  
+  /* ------- PILLS ------- */
+  .pill {
+    font-size: var(--fs-300);
+    cursor: pointer;
+    transition: background var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease);
+  }
+  .pill[aria-selected="true"] {
+    background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange));
+    border-color: transparent;
+    color: #fff;
+  }
+  
+  /* ------- CHIPS ------- */
+  .chip {
+    font-size: var(--fs-200);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(255,255,255,0.05);
+  }
+  
+  /* ------- CARDS ------- */
+  .card h3 { font-size: var(--fs-500); font-weight: 600; }
+  .card p { font-size: var(--fs-400); color: var(--muted); }
+  
+  /* Labs special pulse animation hook (animated in effects.css) */
+  .card.lab { position: relative; }
+  
+  /* ------- WORK CARDS ------- */
+  .work-card { transition: transform var(--dur-base) var(--elevate); }
+  .work-card:hover { transform: translateY(-4px); }
+  .work-card .meta h3 { font-size: var(--fs-500); margin-bottom: 4px; }
+  .work-card .meta p.tiny { line-height: 1.4; }
+  
+  /* ------- PACKS ------- */
+  .pack .list li { font-size: var(--fs-400); }
+  .pack .btn { margin-top: auto; }
+  
+  /* Popular pack marker */
+  .pack.popular { position: relative; }
+  .pack.popular .pill-popular {
+    position: absolute; top: 12px; right: 12px;
+  }
+  
+  /* ------- NAV LINKS ------- */
+  .nav-link {
+    font-size: var(--fs-400);
+    color: var(--text);
+    padding: 6px 0;
+    position: relative;
+  }
+  
+  /* Sequential underline hook handled in effects.css */
+  .nav-link[data-underline] { }
+  
+  /* ------- MOBILE MENU ------- */
+  .ss-mobile-menu a {
+    font-size: var(--fs-500);
+    font-weight: 600;
+    padding: 12px 0;
+  }
+  .ss-mobile-menu .btn { margin-top: 16px; }
+  
+  /* ------- PORTRAIT ORBIT ------- */
+  .portrait-wrap { border-radius: 50%; overflow: hidden; }
+  .portrait-orbits {
+    pointer-events: none;
+  }
+  .portrait-orbits .orbit {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.25);
+    animation: orbit-rotate 16s linear infinite;
+  }
+  .portrait-orbits .o1 { inset: -8%; animation-duration: 18s; }
+  .portrait-orbits .o2 { inset: -14%; animation-duration: 26s; }
+  .portrait-orbits .o3 { inset: -20%; animation-duration: 34s; }
+  
+  @keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* ------- BADGES ------- */
+  .badge {
+    font-size: var(--fs-200);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(255,255,255,0.05);
+    border: var(--border);
+  }
+  
+  /* ------- FORMS ------- */
+  form label { display: block; }
+  form input, form select, form textarea {
+    font-size: var(--fs-400);
+    transition: border-color var(--dur-quick) var(--ease), box-shadow var(--dur-quick) var(--ease);
+  }
+  form input:focus, form select:focus, form textarea:focus {
+    border-color: var(--swift-purple);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(214,60,255,0.25);
+  }
+  form button[type="submit"] { margin-top: 14px; }
+  
+  /* Form status messages */
+  .form-status { font-size: var(--fs-300); margin-top: 8px; }
+  
+  /* Savings estimator */
+  .savings h3 { font-size: var(--fs-500); margin-bottom: 8px; }
+  .savings .result { font-size: var(--fs-400); }
+  
+  /* ------- FOOTER FLOATS ------- */
+  .footer-float {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.08;
+    animation: float-pulse 16s ease-in-out infinite alternate;
+  }
+  .footer-float.float-1 {
+    width: 220px; height: 220px; background: var(--swift-purple);
+    bottom: -60px; left: 10%;
+  }
+  .footer-float.float-2 {
+    width: 160px; height: 160px; background: var(--swift-orange);
+    bottom: -40px; right: 20%;
+    animation-delay: 4s;
+  }
+  
+  @keyframes float-pulse {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-20px) scale(1.05); }
+  }
+  

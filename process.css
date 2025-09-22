@@ -1,0 +1,178 @@
+/* =========================================
+   SwiftSendMax 1.0 — Process
+   Animated 4-step sequential lighting
+   ========================================= */
+
+/* ---------- Vars ---------- */
+:root{
+    --ss-text: var(--color-text, #f5f7fb);
+    --ss-text-dim: var(--color-text-dim, #c9cfdb);
+    --ss-border: var(--color-border, rgba(255,255,255,0.12));
+    --ss-accent: var(--color-accent, #b14cff);
+    --ss-accent-2: var(--color-accent-2, #ff7a18);
+    --ss-surface: var(--color-surface, rgba(255,255,255,0.06));
+    --ss-blur: var(--blur-amount, 10px);
+    --ss-radius-xl: var(--radius-xl, 18px);
+    --ss-radius-lg: var(--radius-lg, 14px);
+    --ease-out: cubic-bezier(.17,.67,.28,.99);
+  
+    --process-cols: 4;
+    --process-gap: clamp(16px, 2.6vw, 28px);
+  }
+  
+  /* ---------- Section ---------- */
+  .process{
+    position: relative;
+    color: var(--ss-text);
+    padding-block: clamp(28px, 7vh, 64px);
+    isolation: isolate;
+  }
+  
+  .process__head{
+    display: grid;
+    gap: 10px;
+    margin-bottom: clamp(16px, 2vh, 24px);
+  }
+  
+  .process__title{
+    font-size: clamp(1.8rem, 3.6vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1.15;
+  }
+  
+  .process__sub{
+    color: var(--ss-text-dim);
+    max-width: 70ch;
+    line-height: 1.6;
+  }
+  
+  /* ---------- Grid ---------- */
+  .process__grid{
+    margin-top: clamp(18px, 3vh, 28px);
+    display: grid;
+    gap: var(--process-gap);
+    grid-template-columns: repeat(var(--process-cols), 1fr);
+  }
+  
+  @media (max-width: 1024px){
+    :root{ --process-cols: 2; }
+  }
+  @media (max-width: 560px){
+    :root{ --process-cols: 1; }
+  }
+  
+  /* ---------- Step Card ---------- */
+  .step-card{
+    position: relative;
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    padding: clamp(14px, 2.4vw, 18px);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(var(--ss-blur));
+    backdrop-filter: blur(var(--ss-blur));
+    box-shadow: 0 12px 38px rgba(0,0,0,.38);
+    overflow: hidden;
+    will-change: transform, box-shadow;
+    transition:
+      transform .28s var(--ease-out),
+      box-shadow .28s var(--ease-out),
+      border-color .2s var(--ease-out),
+      background .28s var(--ease-out);
+  }
+  
+  /* Glow accent ring */
+  .step-card::before{
+    content:"";
+    position:absolute; inset:-30% -30%;
+    background:
+      conic-gradient(from 210deg,
+        rgba(177,76,255,.14),
+        rgba(255,122,24,.12),
+        rgba(177,76,255,.14));
+    filter: blur(28px) saturate(125%);
+    opacity: .35;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  /* Hover lift */
+  .step-card:where(:hover,:focus-within){
+    transform: translateY(-4px);
+    box-shadow: 0 16px 52px rgba(0,0,0,.46);
+    border-color: rgba(255,255,255,.22);
+  }
+  
+  /* ---------- Step Number ---------- */
+  .step-card__num{
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--ss-border);
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ss-text);
+    box-shadow: 0 8px 22px rgba(177,76,255,.20);
+  }
+  
+  /* ---------- Step Content ---------- */
+  .step-card__title{
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+    font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+    letter-spacing: .2px;
+  }
+  
+  .step-card__desc{
+    position: relative;
+    z-index: 1;
+    color: var(--ss-text-dim);
+    line-height: 1.6;
+  }
+  
+  /* ---------- Sequential lighting ---------- */
+  .process__grid .step-card{
+    opacity: 0;
+    transform: translateY(10px);
+    animation: step-in .45s var(--ease-out) forwards;
+  }
+  .process__grid .step-card:nth-child(1){ animation-delay: .1s; }
+  .process__grid .step-card:nth-child(2){ animation-delay: .3s; }
+  .process__grid .step-card:nth-child(3){ animation-delay: .5s; }
+  .process__grid .step-card:nth-child(4){ animation-delay: .7s; }
+  
+  @keyframes step-in{ to{ opacity:1; transform: translateY(0); } }
+  
+  /* Loop glow around numbers */
+  @keyframes step-glow{
+    0%{ box-shadow: 0 0 0 rgba(177,76,255,0); }
+    50%{ box-shadow: 0 0 18px rgba(177,76,255,.65); }
+    100%{ box-shadow: 0 0 0 rgba(177,76,255,0); }
+  }
+  .process__grid .step-card__num{
+    animation: step-glow 6s ease-in-out infinite;
+  }
+  .process__grid .step-card:nth-child(2) .step-card__num{ animation-delay: 1.5s; }
+  .process__grid .step-card:nth-child(3) .step-card__num{ animation-delay: 3s; }
+  .process__grid .step-card:nth-child(4) .step-card__num{ animation-delay: 4.5s; }
+  
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    .step-card,
+    .step-card::before,
+    .step-card__num{
+      transition: none !important;
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+  

@@ -1,0 +1,369 @@
+/* =========================================
+   SwiftSendMax 1.0 — About
+   Portrait orbit, two-column grid, badges
+   ========================================= */
+
+/* ---------- Vars (hooked to global tokens) ---------- */
+:root{
+    --ss-text: var(--color-text, #f5f7fb);
+    --ss-text-dim: var(--color-text-dim, #c9cfdb);
+    --ss-border: var(--color-border, rgba(255,255,255,0.12));
+    --ss-accent: var(--color-accent, #b14cff);
+    --ss-accent-2: var(--color-accent-2, #ff7a18);
+    --ss-surface: var(--color-surface, rgba(255,255,255,0.06));
+    --ss-blur: var(--blur-amount, 10px);
+    --ss-radius-xl: var(--radius-xl, 18px);
+    --ss-radius-lg: var(--radius-lg, 14px);
+    --ss-radius: var(--radius, 12px);
+    --ease-out: cubic-bezier(.17,.67,.28,.99);
+  
+    --about-gap: clamp(18px, 3vw, 32px);
+    --about-cols: 2;
+  
+    --portrait-size: clamp(260px, 32vw, 380px);
+    --orbit-thickness: 1.5px;
+    --orbit-blur: 6px;
+    --tilt: rotateX(14deg) rotateZ(-8deg);
+  }
+  
+  /* ---------- Section shell ---------- */
+  .about{
+    position: relative;
+    color: var(--ss-text);
+    padding-block: clamp(32px, 8vh, 80px);
+    isolation: isolate;
+  }
+  
+  .about__head{
+    display: grid;
+    gap: 8px;
+    margin-bottom: clamp(16px, 3vh, 28px);
+  }
+  
+  .about__eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:6px 10px;
+    border:1px solid var(--ss-border);
+    border-radius:999px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: var(--ss-text-dim);
+    font-size:.82rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  
+  .about__title{
+    font-size: clamp(1.9rem, 3.8vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: .2px;
+    line-height: 1.15;
+  }
+  
+  /* ---------- Grid ---------- */
+  .about__grid{
+    width: min(1220px, 92vw);
+    display: grid;
+    grid-template-columns: repeat(var(--about-cols), 1fr);
+    gap: var(--about-gap);
+    align-items: center;
+    margin-inline: auto;
+  }
+  
+  @media (max-width: 1024px){
+    :root{ --about-cols: 1; }
+    .about__grid{ text-align: center; }
+  }
+  
+  /* =========================================
+     Left: Portrait with Orbit Field
+     ========================================= */
+  .about__portrait{
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: calc(var(--portrait-size) + 40px);
+    perspective: 1200px;
+  }
+  
+  /* Glass card behind portrait for separation */
+  .about__portrait-card{
+    position: absolute;
+    inset: auto;
+    width: calc(var(--portrait-size) + 56px);
+    height: calc(var(--portrait-size) + 56px);
+    border-radius: 28px;
+    border: 1px solid var(--ss-border);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(var(--ss-blur));
+    backdrop-filter: blur(var(--ss-blur));
+    z-index: 0;
+    filter: drop-shadow(0 14px 46px rgba(0,0,0,.45));
+  }
+  
+  /* Orbit rig */
+  .about__orbits{
+    position: relative;
+    width: calc(var(--portrait-size) + 64px);
+    height: calc(var(--portrait-size) + 64px);
+    transform: var(--tilt);
+    transform-style: preserve-3d;
+    filter: drop-shadow(0 10px 30px rgba(177,76,255,.18));
+  }
+  
+  .about-orbit{
+    position:absolute; inset:0;
+    border-radius:50%;
+    border: var(--orbit-thickness) solid rgba(255,255,255,.22);
+    box-shadow: 0 0 var(--orbit-blur) rgba(177,76,255,.35) inset;
+    animation: about-orbit-spin 48s linear infinite;
+  }
+  .about-orbit--2{ transform: scale(.82) rotateX(10deg); animation-duration: 62s; opacity:.9; }
+  .about-orbit--3{ transform: scale(.64) rotateX(-8deg); animation-duration: 76s; opacity:.85; }
+  .about-orbit--dash{
+    border-style: dashed;
+    border-color: rgba(255,255,255,.18);
+    animation-direction: reverse;
+  }
+  
+  /* Floating glow orbs */
+  .about-orb{
+    position:absolute;
+    top:50%; left:50%;
+    width: 10px; height: 10px;
+    border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2));
+    box-shadow: 0 0 12px rgba(255,255,255,.6), 0 0 28px rgba(177,76,255,.45);
+    transform-origin: -180px 0;
+    animation: about-orb-spin 14s linear infinite;
+  }
+  .about-orbit--2 .about-orb{ transform-origin: -140px 0; animation-duration: 18s; }
+  .about-orbit--3 .about-orb{ transform-origin: -100px 0; animation-duration: 22s; }
+  
+  /* Portrait image */
+  .about__img-wrap{
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: var(--portrait-size);
+    height: var(--portrait-size);
+    border-radius: 50%;
+    border: 1px solid var(--ss-border);
+    background:
+      radial-gradient(120% 90% at 50% 10%, rgba(177,76,255,.12), rgba(177,76,255,0)),
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  
+  .about__img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter:
+      drop-shadow(0 10px 30px rgba(0,0,0,.45))
+      drop-shadow(0 8px 22px rgba(177,76,255,.22));
+    transition: transform .35s var(--ease-out), filter .35s var(--ease-out);
+    will-change: transform;
+  }
+  
+  .about__img-wrap:hover .about__img{
+    transform: translateY(-2px) scale(1.01);
+    filter:
+      drop-shadow(0 14px 36px rgba(0,0,0,.5))
+      drop-shadow(0 10px 26px rgba(177,76,255,.28));
+  }
+  
+  /* =========================================
+     Right: Bio, Badges, Stats
+     ========================================= */
+  .about__body{
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+  
+  .about__role{
+    color: var(--ss-text-dim);
+    font-size: 1rem;
+    letter-spacing: .2px;
+  }
+  
+  .about__blurb{
+    color: var(--ss-text-dim);
+    line-height: 1.75;
+    max-width: 62ch;
+  }
+  
+  @media (max-width: 1024px){
+    .about__blurb{ margin-inline: auto; }
+  }
+  
+  /* Badge row */
+  .about__badges{
+    margin-top: 4px;
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .about-badge{
+    border:1px solid var(--ss-border);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: .86rem;
+    color: var(--ss-text-dim);
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Stats mini-cards */
+  .about__stats{
+    margin-top: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+  }
+  @media (max-width: 560px){
+    .about__stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  .stat{
+    border:1px solid var(--ss-border);
+    border-radius: var(--ss-radius-lg);
+    padding: 12px 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    text-align: left;
+  }
+  @media (max-width:1024px){ .stat{ text-align:center; } }
+  .stat__num{
+    font-weight: 800;
+    font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  }
+  .stat__label{
+    margin-top: 2px;
+    color: var(--ss-text-dim);
+    font-size: .92rem;
+  }
+  
+  /* CTA row */
+  .about__ctas{
+    margin-top: 4px;
+    display: flex; align-items:center; gap: 12px; flex-wrap: wrap;
+  }
+  @media (max-width: 1024px){
+    .about__ctas{ justify-content: center; }
+  }
+  
+  /* =========================================
+     Certifications strip (4 slots)
+     ========================================= */
+  .about__certs{
+    margin-top: clamp(16px, 3vh, 24px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 10px;
+  }
+  @media (max-width: 860px){
+    .about__certs{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 480px){
+    .about__certs{ grid-template-columns: 1fr; }
+  }
+  
+  .cert-card{
+    position: relative;
+    border:1px solid var(--ss-border);
+    border-radius: var(--ss-radius-xl);
+    overflow:hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 32px rgba(0,0,0,.35);
+    transition: transform .24s var(--ease-out), box-shadow .24s var(--ease-out), border-color .2s var(--ease-out);
+  }
+  .cert-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 14px 44px rgba(0,0,0,.45);
+    border-color: rgba(255,255,255,.22);
+  }
+  
+  .cert-card__img{
+    display:block; width:100%; height:160px; object-fit: cover;
+  }
+  .cert-card__body{
+    padding: 10px 12px 12px 12px;
+    display:grid; gap: 6px;
+  }
+  .cert-card__title{
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .cert-card__meta{
+    color: var(--ss-text-dim);
+    font-size: .9rem;
+  }
+  
+  /* Link focus ring */
+  .cert-card a:focus-visible,
+  .about__body a:focus-visible{
+    outline: 2px solid rgba(177,76,255,.65);
+    outline-offset: 2px;
+    border-radius: 10px;
+  }
+  
+  /* =========================================
+     Staggered reveals
+     ========================================= */
+  .about__grid > *{
+    opacity: 0;
+    transform: translateY(10px);
+    animation: about-in .45s var(--ease-out) forwards;
+  }
+  .about__grid > :nth-child(1){ animation-delay: .04s; }
+  .about__grid > :nth-child(2){ animation-delay: .10s; }
+  
+  .about__stats .stat{
+    opacity: 0; transform: translateY(8px);
+    animation: about-stat-in .45s var(--ease-out) forwards;
+  }
+  .about__stats .stat:nth-child(1){ animation-delay: .16s; }
+  .about__stats .stat:nth-child(2){ animation-delay: .22s; }
+  .about__stats .stat:nth-child(3){ animation-delay: .28s; }
+  
+  .about__certs .cert-card{
+    opacity: 0; transform: translateY(8px);
+    animation: cert-in .45s var(--ease-out) forwards;
+  }
+  .about__certs .cert-card:nth-child(1){ animation-delay: .12s; }
+  .about__certs .cert-card:nth-child(2){ animation-delay: .18s; }
+  .about__certs .cert-card:nth-child(3){ animation-delay: .24s; }
+  .about__certs .cert-card:nth-child(4){ animation-delay: .30s; }
+  
+  @keyframes about-in{ to{ opacity:1; transform: translateY(0); } }
+  @keyframes about-stat-in{ to{ opacity:1; transform: translateY(0); } }
+  @keyframes cert-in{ to{ opacity:1; transform: translateY(0); } }
+  
+  /* Orbit spins */
+  @keyframes about-orbit-spin{ to{ transform: rotate(360deg); } }
+  @keyframes about-orb-spin{ to{ transform: rotate(360deg); } }
+  
+  /* =========================================
+     Reduced motion
+     ========================================= */
+  @media (prefers-reduced-motion: reduce){
+    .about__grid > *,
+    .about__stats .stat,
+    .about__certs .cert-card,
+    .about-orbit,
+    .about-orb,
+    .about__img{
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+  

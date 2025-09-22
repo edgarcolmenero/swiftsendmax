@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SwiftSend — Build fast. Own your stack. Save on fees.</title>
+  <meta name="description" content="Full-stack development, data engineering, AI automations, fee-smart commerce, and digital growth. Clean, documented, and yours to keep." />
+  <meta name="theme-color" content="#d63cff" />
+
+  <!-- (Optional) Favicons / Manifest – add later if you want -->
+  <!-- <link rel="icon" href="/favicon.ico"> -->
+  <!-- <link rel="manifest" href="/manifest.webmanifest"> -->
+
+  <!-- Base Styles -->
+  <link rel="preload" href="./styles/global.css" as="style" />
+  <link rel="stylesheet" href="./styles/global.css" />
+  <link rel="stylesheet" href="./styles/layout.css" />
+  <link rel="stylesheet" href="./styles/components.css" />
+  <link rel="stylesheet" href="./styles/effects.css" />
+
+  <!-- Section Styles -->
+  <link rel="stylesheet" href="./styles/sections/header.css" />
+  <link rel="stylesheet" href="./styles/sections/hero.css" />
+  <link rel="stylesheet" href="./styles/sections/services.css" />
+  <link rel="stylesheet" href="./styles/sections/work.css" />
+  <link rel="stylesheet" href="./styles/sections/labs.css" />
+  <link rel="stylesheet" href="./styles/sections/process.css" />
+  <link rel="stylesheet" href="./styles/sections/about.css" />
+  <link rel="stylesheet" href="./styles/sections/packs.css" />
+  <link rel="stylesheet" href="./styles/sections/contact.css" />
+  <link rel="stylesheet" href="./styles/sections/footer.css" />
+</head>
+
+<body class="ss-body">
+
+  <!-- ===========================
+       MOBILE MENU OVERLAY (non-sticky site)
+       =========================== -->
+  <div id="mobileMenu" class="ss-mobile-menu" aria-hidden="true">
+    <button class="ss-menu-close" aria-label="Close menu" data-close-menu>&times;</button>
+    <nav class="ss-mobile-nav" aria-label="Mobile">
+      <a href="#home" data-close-menu>Home</a>
+      <a href="#services" data-close-menu>Services</a>
+      <a href="#work" data-close-menu>Work</a>
+      <a href="#labs" data-close-menu>Labs</a>
+      <a href="#packs" data-close-menu>Packs</a>
+      <a href="#about" data-close-menu>About</a>
+      <a href="#contact" data-close-menu>Contact</a>
+      <a href="#start" class="btn btn-primary" data-close-menu>Start a Build</a>
+    </nav>
+  </div>
+
+  <!-- ===========================
+       HEADER (translucent gradient, NOT sticky)
+       =========================== -->
+  <header id="home" class="ss-header" data-module="header">
+    <div class="container header-row">
+      <a class="brand" href="#home" aria-label="SwiftSend home">
+        <img src="./assets/img/logo-s.svg" alt="SwiftSend S logo" class="brand-logo" />
+        <span class="brand-name">SwiftSend</span>
+      </a>
+
+      <nav class="ss-nav" aria-label="Primary">
+        <a href="#services" class="nav-link" data-underline>Services</a>
+        <a href="#work" class="nav-link" data-underline>Work</a>
+        <a href="#labs" class="nav-link" data-underline>Labs</a>
+        <a href="#packs" class="nav-link" data-underline>Packs</a>
+        <a href="#about" class="nav-link" data-underline>About</a>
+        <a href="#contact" class="nav-link" data-underline>Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Search"><span class="icon-search"></span></button>
+        <a href="#start" class="btn btn-primary" data-magnetic data-underline>Start a Build</a>
+        <button class="hamburger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false" data-open-menu>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===========================
+       HERO (parallax starfield + orbiting particles)
+       =========================== -->
+  <main id="mainContent">
+    <section id="hero" class="ss-hero" aria-labelledby="hero-title" data-module="heroField">
+      <!-- Parallax layers -->
+      <div class="stars-layer" aria-hidden="true"></div>
+      <div class="dust-layer" aria-hidden="true"></div>
+      <div class="nebula-layer" aria-hidden="true"></div>
+
+      <!-- Staggered reveal: container orchestrates children -->
+      <div class="container hero-inner" data-reveal="slide-up" data-reveal-stagger="90">
+        <div class="hero-copy" data-reveal-child>
+          <h1 id="hero-title" class="display">
+            Build fast. Own your stack. <span class="accent">Save on fees.</span>
+          </h1>
+          <p class="subtitle">
+            Full-stack development, data engineering, AI automations, and fee-smart commerce —
+            shipped clean, documented, and yours to keep.
+          </p>
+          <div class="hero-ctas">
+            <a href="#start" class="btn btn-primary btn-conic" data-magnetic data-underline>
+              Start a Build
+            </a>
+            <a href="#work" class="btn btn-ghost" data-underline>See the Work</a>
+          </div>
+        </div>
+
+        <!-- Logo + orbit system with correct z-index (logo above orbits) -->
+        <div class="hero-visual" data-reveal-child>
+          <div class="orbit-field" aria-hidden="true">
+            <div class="orbit orbit-1"></div>
+            <div class="orbit orbit-2"></div>
+            <div class="orbit orbit-3"></div>
+            <div class="orbit orbit-4"></div>
+          </div>
+          <img src="./assets/img/logo-s-orbital.svg" alt="SwiftSend emblem" class="hero-logo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         SERVICES (6 translucent cards)
+         =========================== -->
+    <section id="services" class="ss-section ss-services" aria-labelledby="services-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <h2 id="services-title">What We Build</h2>
+          <p class="lead">Modern software, data pipelines, AI automations, and fee-smart commerce.</p>
+        </header>
+
+        <div class="cards-grid" role="list">
+          <article class="card service" role="listitem" data-reveal>
+            <h3>Full-Stack Development</h3>
+            <p>APIs, apps, dashboards, and clean admin tools — modern and scalable.</p>
+          </article>
+
+          <article class="card service" role="listitem" data-reveal>
+            <h3>Data Engineering</h3>
+            <p>Pipelines, warehouses, metrics, and dashboards that actually make sense.</p>
+          </article>
+
+          <article class="card service" role="listitem" data-reveal>
+            <h3>AI Automations &amp; Agents</h3>
+            <p>Voice/chatbots, intake copilots, triage flows — save hours, win speed.</p>
+          </article>
+
+          <article class="card service" role="listitem" data-reveal>
+            <h3>SwiftPay Systems</h3>
+            <p>Fee-smart checkouts, subscriptions, ACH routing — keep more every month.</p>
+          </article>
+
+          <article class="card service" role="listitem" data-reveal>
+            <h3>Digital Marketing</h3>
+            <p>Campaigns, funnels, ads, and analytics — performant by design.</p>
+          </article>
+
+          <article class="card service" role="listitem" data-reveal>
+            <h3>Digital Growth (SEO &amp; CRM)</h3>
+            <p>SEO essentials, CRM wiring, landing pages, and reporting that guides action.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         WORK / PORTFOLIO (hover video previews)
+         =========================== -->
+    <section id="work" class="ss-section ss-work" aria-labelledby="work-title" data-module="portfolioHover">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <h2 id="work-title">Our Work</h2>
+          <p class="lead">Industry demos with real outcomes.</p>
+        </header>
+
+        <div class="filters" role="tablist" aria-label="Portfolio filters" data-reveal>
+          <button role="tab" aria-selected="true" data-filter="all" class="pill" data-underline>All</button>
+          <button role="tab" aria-selected="false" data-filter="realtor" class="pill" data-underline>Realtor</button>
+          <button role="tab" aria-selected="false" data-filter="beauty" class="pill" data-underline>Beauty</button>
+          <button role="tab" aria-selected="false" data-filter="creative" class="pill" data-underline>Creative</button>
+          <button role="tab" aria-selected="false" data-filter="smb" class="pill" data-underline>SMB</button>
+        </div>
+
+        <div class="work-grid" role="list">
+          <!-- RealtorDemo -->
+          <article class="work-card" role="listitem" data-tags="realtor" data-reveal>
+            <div class="media">
+              <video muted preload="metadata" poster="./assets/img/realtor-thumb.jpg" data-hover-video="./assets/video/realtor-preview.webm"></video>
+            </div>
+            <div class="meta">
+              <h3>RealtorDemo</h3>
+              <p class="tiny"><strong>Problem:</strong> Clunky templates lose leads.</p>
+              <p class="tiny"><strong>Build:</strong> MLS-style listings + clear CTAs.</p>
+              <p class="tiny"><strong>Outcome:</strong> +32% form submits in 14 days.</p>
+            </div>
+          </article>
+
+          <!-- NailTech Aamna -->
+          <article class="work-card" role="listitem" data-tags="beauty smb" data-reveal>
+            <div class="media">
+              <video muted preload="metadata" poster="./assets/img/nailtech-thumb.jpg" data-hover-video="./assets/video/nailtech-preview.webm"></video>
+            </div>
+            <div class="meta">
+              <h3>NailTech Aamna</h3>
+              <p class="tiny"><strong>Problem:</strong> Friction to book/pay.</p>
+              <p class="tiny"><strong>Build:</strong> Services + booking (Square-style) with fee-smart tips.</p>
+              <p class="tiny"><strong>Outcome:</strong> Higher booking rate, clearer upsells.</p>
+            </div>
+          </article>
+
+          <!-- Photographer Site -->
+          <article class="work-card" role="listitem" data-tags="creative smb" data-reveal>
+            <div class="media">
+              <video muted preload="metadata" poster="./assets/img/photo-thumb.jpg" data-hover-video="./assets/video/photo-preview.webm"></video>
+            </div>
+            <div class="meta">
+              <h3>Photographer Site</h3>
+              <p class="tiny"><strong>Problem:</strong> Proofing chaos.</p>
+              <p class="tiny"><strong>Build:</strong> Gallery + lightbox proofs + booking.</p>
+              <p class="tiny"><strong>Outcome:</strong> Less email back-and-forth.</p>
+            </div>
+          </article>
+
+          <!-- Barber Demo (new) -->
+          <article class="work-card" role="listitem" data-tags="smb beauty" data-reveal>
+            <div class="media">
+              <video muted preload="metadata" poster="./assets/img/barber-thumb.jpg" data-hover-video="./assets/video/barber-preview.webm"></video>
+            </div>
+            <div class="meta">
+              <h3>Barber Demo</h3>
+              <p class="tiny"><strong>Problem:</strong> No-shows, fee leakage.</p>
+              <p class="tiny"><strong>Build:</strong> Schedule + deposits + pay-by-bank nudges.</p>
+              <p class="tiny"><strong>Outcome:</strong> Fewer no-shows, lower fees.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         SWIFTSEND LABS
+         =========================== -->
+    <section id="labs" class="ss-section ss-labs" aria-labelledby="labs-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <h2 id="labs-title">SwiftSend Labs</h2>
+          <p class="lead">Affordable, personalized experiments you can actually use.</p>
+        </header>
+
+        <div class="cards-grid labs-grid" role="list">
+          <article class="card lab" role="listitem" data-reveal>
+            <h3>SwiftPay Mini</h3>
+            <p>One-page checkout links with auto receipts. Ship payments in hours, not weeks.</p>
+          </article>
+          <article class="card lab" role="listitem" data-reveal>
+            <h3>Site-in-a-Day</h3>
+            <p>Flat-rate industry sections + your brand colors. Launch quickly, look premium.</p>
+          </article>
+          <article class="card lab" role="listitem" data-reveal>
+            <h3>Fee Optimizer Widget</h3>
+            <p>“Pay by Bank &amp; save” nudges + estimator. Keep more each month.</p>
+          </article>
+          <article class="card lab" role="listitem" data-reveal>
+            <h3>Leads Autopilot</h3>
+            <p>Form → CRM → AI triage → calendar invite. Faster responses, more bookings.</p>
+          </article>
+          <article class="card lab" role="listitem" data-reveal>
+            <h3>Doc Copilot</h3>
+            <p>Upload PDFs/policies → Q&amp;A bot with citations. Docs that answer themselves.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         PROCESS (sequential lighting)
+         =========================== -->
+    <section id="process" class="ss-section ss-process" aria-labelledby="process-title" data-module="processFlow">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <h2 id="process-title">Our Process</h2>
+          <p class="lead">Simple, transparent, and fast.</p>
+        </header>
+
+        <ol class="process-steps" data-reveal>
+          <li class="step" data-step="1"><span class="step-head">Discover</span><span class="step-line"></span></li>
+          <li class="step" data-step="2"><span class="step-head">Build</span><span class="step-line"></span></li>
+          <li class="step" data-step="3"><span class="step-head">Ship</span><span class="step-line"></span></li>
+          <li class="step" data-step="4"><span class="step-head">Iterate</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===========================
+         ABOUT (portrait with orbiting circles)
+         =========================== -->
+    <section id="about" class="ss-section ss-about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div class="about-visual" data-reveal>
+          <div class="portrait-wrap" aria-hidden="true">
+            <img src="./assets/img/edgar-portrait.jpg" alt="Edgar Colmenero portrait" class="portrait" />
+            <!-- Orbiting circles around the portrait, not the page -->
+            <div class="portrait-orbits">
+              <div class="orbit o1"></div>
+              <div class="orbit o2"></div>
+              <div class="orbit o3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-copy" data-reveal>
+          <h2 id="about-title">About SwiftSend</h2>
+          <p>
+            I’m <strong>Edgar Colmenero</strong>, Founder &amp; Full-Stack Developer at SwiftSend.
+            Honors student active in <strong>STEM Club</strong>, with studies at <strong>TCC</strong>,
+            <strong>NCTC</strong>, and <strong>UTA</strong>. I’m a <strong>Software Engineer at
+            Colmenero Consulting</strong> and former <strong>Adidas</strong> team member.
+            Bilingual (English/Spanish).
+          </p>
+          <p class="motto"><em>Never Stay Satisfied.</em></p>
+
+          <ul class="badges">
+            <li class="badge">Honors Program</li>
+            <li class="badge">STEM Club</li>
+            <li class="badge">UTA • NCTC • TCC</li>
+            <li class="badge">Colmenero Consulting — Software Engineer</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         PACKS (pricing tiers + add-ons)
+         =========================== -->
+    <section id="packs" class="ss-section ss-packs" aria-labelledby="packs-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <h2 id="packs-title">Packs</h2>
+          <p class="lead">Fixed-scope options with clear outcomes and upgrade paths.</p>
+        </header>
+
+        <div class="packs-grid" role="list">
+          <article class="pack" role="listitem" data-reveal>
+            <h3>Starter</h3>
+            <ul class="list">
+              <li>Industry site + CMS basics</li>
+              <li>Analytics + contact form</li>
+              <li>Launch fast</li>
+            </ul>
+            <a href="#contact" class="btn btn-ghost" data-underline>Get Started</a>
+          </article>
+
+        <article class="pack popular" role="listitem" aria-label="Builder (popular)" data-reveal>
+            <div class="pill-popular">Popular</div>
+            <h3>Builder</h3>
+            <ul class="list">
+              <li>Custom components + APIs</li>
+              <li>Admin tools + CRM wiring</li>
+              <li>Faster internal ops</li>
+            </ul>
+            <a href="#contact" class="btn btn-primary btn-conic" data-magnetic data-underline>Choose Builder</a>
+          </article>
+
+          <article class="pack" role="listitem" data-reveal>
+            <h3>Engine</h3>
+            <ul class="list">
+              <li>Data pipelines + warehouse</li>
+              <li>Metrics + BI dashboards</li>
+              <li>Decision-ready data</li>
+            </ul>
+            <a href="#contact" class="btn btn-ghost" data-underline>Talk Data</a>
+          </article>
+
+          <article class="pack" role="listitem" data-reveal>
+            <h3>Growth</h3>
+            <ul class="list">
+              <li>SEO + lead flows</li>
+              <li>Fee-smart checkout</li>
+              <li>Reporting that guides action</li>
+            </ul>
+            <a href="#contact" class="btn btn-ghost" data-underline>Scale Smart</a>
+          </article>
+        </div>
+
+        <!-- Add-ons row -->
+        <div class="addons" data-reveal>
+          <h4>Add-ons</h4>
+          <ul class="chips">
+            <li class="chip">AI Bot</li>
+            <li class="chip">SwiftPay Mini</li>
+            <li class="chip">App Shell (PWA)</li>
+            <li class="chip">DevOps Hardening</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         CONTACT (form + savings estimator)
+         =========================== -->
+    <section id="contact" class="ss-section ss-contact" aria-labelledby="contact-title" data-module="forms">
+      <div class="container contact-grid">
+        <div class="contact-form" data-reveal>
+          <header class="section-head">
+            <h2 id="contact-title">Let’s Build</h2>
+            <p class="lead">Tell us about your project. We’ll respond quickly.</p>
+          </header>
+
+          <form id="projectForm" action="https://formspree.io/f/your-id" method="POST" novalidate>
+            <div class="row">
+              <label>
+                <span>Name</span>
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                <span>Email</span>
+                <input type="email" name="email" required />
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                <span>Project Type</span>
+                <select name="projectType" required>
+                  <option value="">Select…</option>
+                  <option>Full-Stack Development</option>
+                  <option>Data Engineering</option>
+                  <option>AI Automations & Agents</option>
+                  <option>SwiftPay Systems</option>
+                  <option>Digital Marketing</option>
+                  <option>Digital Growth (SEO & CRM)</option>
+                </select>
+              </label>
+              <label>
+                <span>Industry (optional)</span>
+                <input type="text" name="industry" />
+              </label>
+            </div>
+            <label class="block">
+              <span>Vision / Requirements</span>
+              <textarea name="message" rows="6" required></textarea>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-conic" data-magnetic data-underline id="start">
+              Start a Build
+            </button>
+            <p class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <!-- Savings estimator -->
+        <aside class="savings" data-reveal data-module="savingsEstimator" aria-label="Fee Savings Estimator">
+          <h3>Save with Swift</h3>
+          <p class="tiny">Estimate annual savings when nudging customers to cheaper rails.</p>
+          <form id="savingsForm" class="estimator">
+            <label>
+              <span>Monthly volume ($)</span>
+              <input type="number" min="0" step="100" name="volume" placeholder="15000" />
+            </label>
+            <label>
+              <span>Avg ticket ($)</span>
+              <input type="number" min="1" step="1" name="ticket" placeholder="120" />
+            </label>
+            <label>
+              <span>% shifted to ACH</span>
+              <input type="number" min="0" max="100" step="5" name="ach" placeholder="30" />
+            </label>
+            <output name="result" class="result">$0 estimated / year</output>
+          </form>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===========================
+       FOOTER (modern, floating elements)
+       =========================== -->
+  <footer class="ss-footer" aria-labelledby="footer-title">
+    <div class="container footer-grid" data-reveal>
+      <div class="foot-brand">
+        <img src="./assets/img/logo-s.svg" alt="" class="foot-logo" />
+        <h2 id="footer-title" class="sr-only">SwiftSend Footer</h2>
+        <p class="motto">Never Stay Satisfied.</p>
+      </div>
+
+      <nav class="foot-nav" aria-label="Footer">
+        <a href="#home" data-underline>Home</a>
+        <a href="#services" data-underline>Services</a>
+        <a href="#work" data-underline>Work</a>
+        <a href="#labs" data-underline>Labs</a>
+        <a href="#packs" data-underline>Packs</a>
+        <a href="#about" data-underline>About</a>
+        <a href="#contact" data-underline>Contact</a>
+      </nav>
+
+      <div class="foot-contact">
+        <a href="mailto:swift.send.marketing@gmail.com" class="link" data-underline>swift.send.marketing@gmail.com</a>
+        <a href="https://instagram.com/EdgarColmenero" target="_blank" rel="noreferrer" class="link" data-underline>@EdgarColmenero</a>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <div class="container">
+        <small>© 2025 SwiftSend. All Rights Reserved.</small>
+      </div>
+      <!-- floating subtle background elements -->
+      <div class="footer-float float-1" aria-hidden="true"></div>
+      <div class="footer-float float-2" aria-hidden="true"></div>
+    </div>
+  </footer>
+
+  <!-- Single entry point: prevent double-inits and race conditions -->
+  <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
