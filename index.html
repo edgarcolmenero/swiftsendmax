@@ -46,8 +46,18 @@
       <a href="#packs" data-close-menu>Packs</a>
       <a href="#about" data-close-menu>About</a>
       <a href="#contact" data-close-menu>Contact</a>
-      <a href="#start" class="btn btn-primary" data-close-menu>Start a Build</a>
     </nav>
+    <div class="mobile-utilities">
+      <button class="icon-btn" aria-label="Search" data-icon="search" data-close-menu>
+        <span class="icon icon-search" aria-hidden="true"></span>
+      </button>
+      <a href="#contact" class="icon-btn" aria-label="Contact SwiftSend" data-icon="phone" data-close-menu>
+        <span class="icon icon-phone" aria-hidden="true"></span>
+      </a>
+      <button class="icon-btn" aria-label="Client Portal" data-icon="account" data-close-menu>
+        <span class="icon icon-account" aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
 
   <!-- ===========================
@@ -61,6 +71,7 @@
       </a>
 
       <nav class="ss-nav" aria-label="Primary">
+        <a href="#home" class="nav-link" data-underline>Home</a>
         <a href="#services" class="nav-link" data-underline>Services</a>
         <a href="#work" class="nav-link" data-underline>Work</a>
         <a href="#labs" class="nav-link" data-underline>Labs</a>
@@ -70,8 +81,15 @@
       </nav>
 
       <div class="header-actions">
-        <button class="icon-btn" aria-label="Search"><span class="icon-search"></span></button>
-        <a href="#start" class="btn btn-primary" data-magnetic data-underline>Start a Build</a>
+        <button class="icon-btn" aria-label="Search" data-icon="search">
+          <span class="icon icon-search" aria-hidden="true"></span>
+        </button>
+        <a href="#contact" class="icon-btn" aria-label="Contact SwiftSend" data-icon="phone">
+          <span class="icon icon-phone" aria-hidden="true"></span>
+        </a>
+        <button class="icon-btn" aria-label="Client Portal" data-icon="account">
+          <span class="icon icon-account" aria-hidden="true"></span>
+        </button>
         <button class="hamburger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false" data-open-menu>
           <span></span><span></span><span></span>
         </button>
@@ -93,17 +111,17 @@
       <div class="container hero-inner" data-reveal="slide-up" data-reveal-stagger="90">
         <div class="hero-copy" data-reveal-child>
           <h1 id="hero-title" class="display">
-            Build fast. Own your stack. <span class="accent">Save on fees.</span>
+            Your Software. Your Stack. <span class="accent">Your Savings.</span>
           </h1>
           <p class="subtitle">
-            Full-stack development, data engineering, AI automations, and fee-smart commerce —
-            shipped clean, documented, and yours to keep.
+            SwiftSend 2.0 delivers custom software, data, and payment systems you own outright —
+            engineered for lower fees, faster launches, and scale-ready handoffs.
           </p>
           <div class="hero-ctas">
-            <a href="#start" class="btn btn-primary btn-conic" data-magnetic data-underline>
-              Start a Build
+            <a href="#contact" class="btn btn-primary btn-conic" data-magnetic data-underline>
+              Plan Your Sprint
             </a>
-            <a href="#work" class="btn btn-ghost" data-underline>See the Work</a>
+            <a href="#work" class="btn btn-ghost" data-underline>Review Outcomes</a>
           </div>
         </div>
 
@@ -126,39 +144,51 @@
     <section id="services" class="ss-section ss-services" aria-labelledby="services-title">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2 id="services-title">What We Build</h2>
-          <p class="lead">Modern software, data pipelines, AI automations, and fee-smart commerce.</p>
+          <h2 id="services-title">SwiftSend 2.0 Service Pillars</h2>
+          <p class="lead">Six build tracks that connect product, data, automation, and payments into one stack.</p>
         </header>
 
         <div class="cards-grid" role="list">
           <article class="card service" role="listitem" data-reveal>
-            <h3>Full-Stack Development</h3>
-            <p>APIs, apps, dashboards, and clean admin tools — modern and scalable.</p>
+            <span class="card-icon icon-service-platforms" aria-hidden="true"></span>
+            <h3>Product Platforms</h3>
+            <p>Customer apps, partner portals, and admin dashboards engineered for launch speed and scale.</p>
+            <a href="#work" class="card-link" data-underline>View Platform Blueprint</a>
           </article>
 
           <article class="card service" role="listitem" data-reveal>
-            <h3>Data Engineering</h3>
-            <p>Pipelines, warehouses, metrics, and dashboards that actually make sense.</p>
+            <span class="card-icon icon-service-data" aria-hidden="true"></span>
+            <h3>Data &amp; Decision Layer</h3>
+            <p>Warehouses, metrics, and observability so finance and ops teams trust every dashboard.</p>
+            <a href="#contact" class="card-link" data-underline>Map Data Flows</a>
           </article>
 
           <article class="card service" role="listitem" data-reveal>
-            <h3>AI Automations &amp; Agents</h3>
-            <p>Voice/chatbots, intake copilots, triage flows — save hours, win speed.</p>
+            <span class="card-icon icon-service-automation" aria-hidden="true"></span>
+            <h3>Automation Crew</h3>
+            <p>AI copilots, workflow bots, and intake routing that shrink response times without adding headcount.</p>
+            <a href="#labs" class="card-link" data-underline>Prototype an Automation</a>
           </article>
 
           <article class="card service" role="listitem" data-reveal>
-            <h3>SwiftPay Systems</h3>
-            <p>Fee-smart checkouts, subscriptions, ACH routing — keep more every month.</p>
+            <span class="card-icon icon-service-payments" aria-hidden="true"></span>
+            <h3>Payments &amp; Monetization</h3>
+            <p>ACH nudges, subscriptions, and embedded checkout logic that return margin every month.</p>
+            <a href="#packs" class="card-link" data-underline>Optimize Payments</a>
           </article>
 
           <article class="card service" role="listitem" data-reveal>
-            <h3>Digital Marketing</h3>
-            <p>Campaigns, funnels, ads, and analytics — performant by design.</p>
+            <span class="card-icon icon-service-growth" aria-hidden="true"></span>
+            <h3>Lifecycle Growth</h3>
+            <p>CRM wiring, nurture sequences, and site personalization that keep leads warm and convert.</p>
+            <a href="#work" class="card-link" data-underline>See Growth Plays</a>
           </article>
 
           <article class="card service" role="listitem" data-reveal>
-            <h3>Digital Growth (SEO &amp; CRM)</h3>
-            <p>SEO essentials, CRM wiring, landing pages, and reporting that guides action.</p>
+            <span class="card-icon icon-service-enablement" aria-hidden="true"></span>
+            <h3>Enablement &amp; Handoff</h3>
+            <p>Runbooks, training, and embedded documentation so your team owns the stack on day one.</p>
+            <a href="#contact" class="card-link" data-underline>Plan Enablement</a>
           </article>
         </div>
       </div>
@@ -170,68 +200,51 @@
     <section id="work" class="ss-section ss-work" aria-labelledby="work-title" data-module="portfolioHover">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2 id="work-title">Our Work</h2>
-          <p class="lead">Industry demos with real outcomes.</p>
+          <h2 id="work-title">Launch Files</h2>
+          <p class="lead">Three SwiftSend 2.0 builds proving speed, savings, and ownership.</p>
         </header>
 
         <div class="filters" role="tablist" aria-label="Portfolio filters" data-reveal>
           <button role="tab" aria-selected="true" data-filter="all" class="pill" data-underline>All</button>
-          <button role="tab" aria-selected="false" data-filter="realtor" class="pill" data-underline>Realtor</button>
-          <button role="tab" aria-selected="false" data-filter="beauty" class="pill" data-underline>Beauty</button>
-          <button role="tab" aria-selected="false" data-filter="creative" class="pill" data-underline>Creative</button>
-          <button role="tab" aria-selected="false" data-filter="smb" class="pill" data-underline>SMB</button>
+          <button role="tab" aria-selected="false" data-filter="commerce" class="pill" data-underline>Commerce</button>
+          <button role="tab" aria-selected="false" data-filter="operations" class="pill" data-underline>Operations</button>
+          <button role="tab" aria-selected="false" data-filter="services" class="pill" data-underline>Services</button>
         </div>
 
         <div class="work-grid" role="list">
-          <!-- RealtorDemo -->
-          <article class="work-card" role="listitem" data-tags="realtor" data-reveal>
-            <div class="media">
-              <video muted preload="metadata" poster="./assets/img/realtor-thumb.jpg" data-hover-video="./assets/video/realtor-preview.webm"></video>
-            </div>
-            <div class="meta">
-              <h3>RealtorDemo</h3>
-              <p class="tiny"><strong>Problem:</strong> Clunky templates lose leads.</p>
-              <p class="tiny"><strong>Build:</strong> MLS-style listings + clear CTAs.</p>
-              <p class="tiny"><strong>Outcome:</strong> +32% form submits in 14 days.</p>
-            </div>
-          </article>
-
-          <!-- NailTech Aamna -->
-          <article class="work-card" role="listitem" data-tags="beauty smb" data-reveal>
+          <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
             <div class="media">
               <video muted preload="metadata" poster="./assets/img/nailtech-thumb.jpg" data-hover-video="./assets/video/nailtech-preview.webm"></video>
             </div>
             <div class="meta">
-              <h3>NailTech Aamna</h3>
-              <p class="tiny"><strong>Problem:</strong> Friction to book/pay.</p>
-              <p class="tiny"><strong>Build:</strong> Services + booking (Square-style) with fee-smart tips.</p>
-              <p class="tiny"><strong>Outcome:</strong> Higher booking rate, clearer upsells.</p>
+              <h3>GlowBar Express</h3>
+              <p class="tiny"><strong>Problem:</strong> Booking gaps and high card fees.</p>
+              <p class="tiny"><strong>Build:</strong> Mobile-first service menu, instant deposits, and bank-preferred checkout.</p>
+              <p class="tiny"><strong>Outcome:</strong> 28% lift in repeat bookings and $900/month in recovered margin.</p>
             </div>
           </article>
 
-          <!-- Photographer Site -->
-          <article class="work-card" role="listitem" data-tags="creative smb" data-reveal>
+          <article class="work-card" role="listitem" data-tags="operations" data-reveal>
             <div class="media">
               <video muted preload="metadata" poster="./assets/img/photo-thumb.jpg" data-hover-video="./assets/video/photo-preview.webm"></video>
             </div>
             <div class="meta">
-              <h3>Photographer Site</h3>
-              <p class="tiny"><strong>Problem:</strong> Proofing chaos.</p>
-              <p class="tiny"><strong>Build:</strong> Gallery + lightbox proofs + booking.</p>
-              <p class="tiny"><strong>Outcome:</strong> Less email back-and-forth.</p>
+              <h3>AtlasOps Dispatch</h3>
+              <p class="tiny"><strong>Problem:</strong> Field teams juggling spreadsheets.</p>
+              <p class="tiny"><strong>Build:</strong> Progressive web app with route planning, offline sync, and ops dashboards.</p>
+              <p class="tiny"><strong>Outcome:</strong> 3x faster job routing and same-day reporting.</p>
             </div>
           </article>
 
-          <!-- Barber Demo (new) -->
-          <article class="work-card" role="listitem" data-tags="smb beauty" data-reveal>
+          <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
             <div class="media">
-              <video muted preload="metadata" poster="./assets/img/barber-thumb.jpg" data-hover-video="./assets/video/barber-preview.webm"></video>
+              <video muted preload="metadata" poster="./assets/img/realtor-thumb.jpg" data-hover-video="./assets/video/realtor-preview.webm"></video>
             </div>
             <div class="meta">
-              <h3>Barber Demo</h3>
-              <p class="tiny"><strong>Problem:</strong> No-shows, fee leakage.</p>
-              <p class="tiny"><strong>Build:</strong> Schedule + deposits + pay-by-bank nudges.</p>
-              <p class="tiny"><strong>Outcome:</strong> Fewer no-shows, lower fees.</p>
+              <h3>PrimeAgent Hub</h3>
+              <p class="tiny"><strong>Problem:</strong> Template sites losing referral traffic.</p>
+              <p class="tiny"><strong>Build:</strong> Custom listing microsites, lead scoring, and CRM automations.</p>
+              <p class="tiny"><strong>Outcome:</strong> 41% more qualified leads in the first month.</p>
             </div>
           </article>
         </div>
@@ -245,29 +258,35 @@
       <div class="container">
         <header class="section-head" data-reveal>
           <h2 id="labs-title">SwiftSend Labs</h2>
-          <p class="lead">Affordable, personalized experiments you can actually use.</p>
+          <p class="lead">Sprint-sized experiments that de-risk the big build.</p>
+          <p class="tagline">Prototype. Validate. Ship with confidence.</p>
         </header>
 
         <div class="cards-grid labs-grid" role="list">
           <article class="card lab" role="listitem" data-reveal>
+            <span class="card-icon icon-lab-checkout" aria-hidden="true"></span>
             <h3>SwiftPay Mini</h3>
-            <p>One-page checkout links with auto receipts. Ship payments in hours, not weeks.</p>
+            <p>Hosted checkout links with ACH incentives, branded receipts, and CRM sync in under a week.</p>
           </article>
           <article class="card lab" role="listitem" data-reveal>
+            <span class="card-icon icon-lab-site" aria-hidden="true"></span>
             <h3>Site-in-a-Day</h3>
-            <p>Flat-rate industry sections + your brand colors. Launch quickly, look premium.</p>
+            <p>Industry-specific page stack, copy assist, and CMS training to refresh your web presence fast.</p>
           </article>
           <article class="card lab" role="listitem" data-reveal>
+            <span class="card-icon icon-lab-fees" aria-hidden="true"></span>
             <h3>Fee Optimizer Widget</h3>
-            <p>“Pay by Bank &amp; save” nudges + estimator. Keep more each month.</p>
+            <p>Embedded savings estimator with nudges that move customers to lower-fee rails.</p>
           </article>
           <article class="card lab" role="listitem" data-reveal>
+            <span class="card-icon icon-lab-leads" aria-hidden="true"></span>
             <h3>Leads Autopilot</h3>
-            <p>Form → CRM → AI triage → calendar invite. Faster responses, more bookings.</p>
+            <p>Intake forms tied to AI triage, CRM routing, and instant scheduling follow-ups.</p>
           </article>
           <article class="card lab" role="listitem" data-reveal>
+            <span class="card-icon icon-lab-docs" aria-hidden="true"></span>
             <h3>Doc Copilot</h3>
-            <p>Upload PDFs/policies → Q&amp;A bot with citations. Docs that answer themselves.</p>
+            <p>Upload manuals or policies and deliver a branded Q&amp;A assistant with cited answers.</p>
           </article>
         </div>
       </div>
@@ -279,15 +298,30 @@
     <section id="process" class="ss-section ss-process" aria-labelledby="process-title" data-module="processFlow">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2 id="process-title">Our Process</h2>
-          <p class="lead">Simple, transparent, and fast.</p>
+          <h2 id="process-title">How We Ship SwiftSend 2.0</h2>
+          <p class="lead">Every engagement runs as focused sprints with clear ownership and artifacts.</p>
         </header>
 
         <ol class="process-steps" data-reveal>
-          <li class="step" data-step="1"><span class="step-head">Discover</span><span class="step-line"></span></li>
-          <li class="step" data-step="2"><span class="step-head">Build</span><span class="step-line"></span></li>
-          <li class="step" data-step="3"><span class="step-head">Ship</span><span class="step-line"></span></li>
-          <li class="step" data-step="4"><span class="step-head">Iterate</span></li>
+          <li class="step" data-step="1">
+            <span class="step-head">Scope Sprint</span>
+            <span class="step-desc">Co-create requirements, success metrics, and interfaces in a live working session.</span>
+            <span class="step-line"></span>
+          </li>
+          <li class="step" data-step="2">
+            <span class="step-head">Design Systems</span>
+            <span class="step-desc">Architect services, data, and automations with clickable proofs and tech specs.</span>
+            <span class="step-line"></span>
+          </li>
+          <li class="step" data-step="3">
+            <span class="step-head">Build &amp; Validate</span>
+            <span class="step-desc">Ship increments, test with stakeholders, and measure fee impact along the way.</span>
+            <span class="step-line"></span>
+          </li>
+          <li class="step" data-step="4">
+            <span class="step-head">Enable &amp; Iterate</span>
+            <span class="step-desc">Deliver runbooks, training, and backlog priorities for your team to drive next.</span>
+          </li>
         </ol>
       </div>
     </section>
@@ -336,50 +370,54 @@
     <section id="packs" class="ss-section ss-packs" aria-labelledby="packs-title">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2 id="packs-title">Packs</h2>
-          <p class="lead">Fixed-scope options with clear outcomes and upgrade paths.</p>
+          <h2 id="packs-title">SwiftSend Packs</h2>
+          <p class="lead">Choose the sprint bundle that matches where your product, data, or revenue engine stands today.</p>
         </header>
 
         <div class="packs-grid" role="list">
           <article class="pack" role="listitem" data-reveal>
-            <h3>Starter</h3>
+            <span class="pack-icon icon-pack-launch" aria-hidden="true"></span>
+            <h3>Launch Kit</h3>
             <ul class="list">
-              <li>Industry site + CMS basics</li>
-              <li>Analytics + contact form</li>
-              <li>Launch fast</li>
+              <li>Story-driven marketing site + CMS handoff</li>
+              <li>Analytics, consent, and lead capture wired in</li>
+              <li>One-week enablement and asset library</li>
             </ul>
-            <a href="#contact" class="btn btn-ghost" data-underline>Get Started</a>
+            <a href="#contact" class="btn btn-ghost" data-underline>Book Launch Kit</a>
           </article>
 
-        <article class="pack popular" role="listitem" aria-label="Builder (popular)" data-reveal>
+          <article class="pack popular" role="listitem" aria-label="Automation Crew Pack (popular)" data-reveal>
             <div class="pill-popular">Popular</div>
-            <h3>Builder</h3>
+            <span class="pack-icon icon-pack-automation" aria-hidden="true"></span>
+            <h3>Automation Crew Pack</h3>
             <ul class="list">
-              <li>Custom components + APIs</li>
-              <li>Admin tools + CRM wiring</li>
-              <li>Faster internal ops</li>
+              <li>Intake bots, routing rules, and inbox triage</li>
+              <li>Ops dashboards with SLA tracking</li>
+              <li>Fee impact reporting baked in</li>
             </ul>
-            <a href="#contact" class="btn btn-primary btn-conic" data-magnetic data-underline>Choose Builder</a>
+            <a href="#contact" class="btn btn-primary btn-conic" data-magnetic data-underline>Reserve Automation Crew</a>
           </article>
 
           <article class="pack" role="listitem" data-reveal>
-            <h3>Engine</h3>
+            <span class="pack-icon icon-pack-data" aria-hidden="true"></span>
+            <h3>Insights Engine</h3>
             <ul class="list">
-              <li>Data pipelines + warehouse</li>
-              <li>Metrics + BI dashboards</li>
-              <li>Decision-ready data</li>
+              <li>Source-to-warehouse pipelines with dbt models</li>
+              <li>Executive dashboards and alerts</li>
+              <li>Documentation and data governance starter</li>
             </ul>
-            <a href="#contact" class="btn btn-ghost" data-underline>Talk Data</a>
+            <a href="#contact" class="btn btn-ghost" data-underline>Start Insights Engine</a>
           </article>
 
           <article class="pack" role="listitem" data-reveal>
-            <h3>Growth</h3>
+            <span class="pack-icon icon-pack-revenue" aria-hidden="true"></span>
+            <h3>Revenue Maximizer</h3>
             <ul class="list">
-              <li>SEO + lead flows</li>
-              <li>Fee-smart checkout</li>
-              <li>Reporting that guides action</li>
+              <li>Multi-rail checkout with ACH incentives</li>
+              <li>Subscription + usage billing automations</li>
+              <li>Lifecycle campaigns tied to fee savings</li>
             </ul>
-            <a href="#contact" class="btn btn-ghost" data-underline>Scale Smart</a>
+            <a href="#contact" class="btn btn-ghost" data-underline>Launch Revenue Maximizer</a>
           </article>
         </div>
 
@@ -387,10 +425,10 @@
         <div class="addons" data-reveal>
           <h4>Add-ons</h4>
           <ul class="chips">
-            <li class="chip">AI Bot</li>
-            <li class="chip">SwiftPay Mini</li>
-            <li class="chip">App Shell (PWA)</li>
-            <li class="chip">DevOps Hardening</li>
+            <li class="chip">Client Portal Shell</li>
+            <li class="chip">Analytics Observatory</li>
+            <li class="chip">AI Support Desk</li>
+            <li class="chip">Team Enablement Sprint</li>
           </ul>
         </div>
       </div>
@@ -403,8 +441,8 @@
       <div class="container contact-grid">
         <div class="contact-form" data-reveal>
           <header class="section-head">
-            <h2 id="contact-title">Let’s Build</h2>
-            <p class="lead">Tell us about your project. We’ll respond quickly.</p>
+            <h2 id="contact-title">Start Your SwiftSend 2.0 Scope</h2>
+            <p class="lead">Share the context, stack, and savings targets. We’ll schedule a sprint planning call within one business day.</p>
           </header>
 
           <form id="projectForm" action="https://formspree.io/f/your-id" method="POST" novalidate>
@@ -420,15 +458,15 @@
             </div>
             <div class="row">
               <label>
-                <span>Project Type</span>
+                <span>Project Track</span>
                 <select name="projectType" required>
                   <option value="">Select…</option>
-                  <option>Full-Stack Development</option>
-                  <option>Data Engineering</option>
-                  <option>AI Automations & Agents</option>
-                  <option>SwiftPay Systems</option>
-                  <option>Digital Marketing</option>
-                  <option>Digital Growth (SEO & CRM)</option>
+                  <option>Product Platforms</option>
+                  <option>Data &amp; Decision Layer</option>
+                  <option>Automation Crew</option>
+                  <option>Payments &amp; Monetization</option>
+                  <option>Lifecycle Growth</option>
+                  <option>Enablement &amp; Handoff</option>
                 </select>
               </label>
               <label>
@@ -442,7 +480,7 @@
             </label>
 
             <button type="submit" class="btn btn-primary btn-conic" data-magnetic data-underline id="start">
-              Start a Build
+              Request Scope Session
             </button>
             <p class="form-status" role="status" aria-live="polite"></p>
           </form>
