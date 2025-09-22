@@ -1,111 +1,174 @@
 // /scripts/modules/header.js
 // Desktop active link sync + mobile full-screen menu toggle with focus trap
 
-import { qs, qsa, addClass, removeClass, toggleClass } from "../utils/dom.js";
+import { qs, qsa, addClass, removeClass, rafQueue } from "../utils/dom.js";
+
+const SCROLL_THRESHOLD = 80;
+const FOCUSABLE_SELECTOR =
+  "a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])";
 
 let lastActiveLink = null;
 let lastFocusedEl = null;
+let releaseFocusTrap = null;
 
-function setActiveLink() {
-  const links = qsa("nav a[href^='#']");
+function syncActiveLink() {
+  const links = qsa(".ss-nav a[href^='#']");
+  if (!links.length) return;
+
   const fromTop = window.scrollY + 100;
+  let current = null;
 
   links.forEach((link) => {
-    const section = qs(link.getAttribute("href"));
-    if (section && section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-      if (lastActiveLink) lastActiveLink.classList.remove("is-active");
-      link.classList.add("is-active");
-      lastActiveLink = link;
+    const targetId = link.getAttribute("href");
+    if (!targetId) return;
+
+    const section = qs(targetId);
+    if (!section) return;
+
+    const top = section.offsetTop;
+    const bottom = top + section.offsetHeight;
+
+    if (fromTop >= top && fromTop < bottom) {
+      current = link;
     }
   });
+
+  if (lastActiveLink && lastActiveLink !== current) {
+    lastActiveLink.classList.remove("is-active");
+    lastActiveLink = null;
+  }
+
+  if (current && current !== lastActiveLink) {
+    current.classList.add("is-active");
+    lastActiveLink = current;
+  }
+}
+
+function updateHeaderFade() {
+  const header = qs(".ss-header");
+  if (!header) return;
+
+  const shouldFade = window.scrollY > SCROLL_THRESHOLD;
+  header.classList.toggle("header-fade", shouldFade);
+}
+
+const handleScroll = rafQueue(() => {
+  syncActiveLink();
+  updateHeaderFade();
+});
+
+function trapFocus(container) {
+  const focusables = qsa(FOCUSABLE_SELECTOR, container).filter((el) => {
+    if (el.hasAttribute("disabled") || el.tabIndex === -1) return false;
+    const style = window.getComputedStyle(el);
+    return style.display !== "none" && style.visibility !== "hidden";
+  });
+
+  if (!focusables.length) {
+    return () => {};
+  }
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+
+  function handleTab(event) {
+    if (event.key !== "Tab") return;
+
+    if (event.shiftKey) {
+      if (document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else if (document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  container.addEventListener("keydown", handleTab);
+
+  requestAnimationFrame(() => {
+    first.focus({ preventScroll: true });
+  });
+
+  return () => {
+    container.removeEventListener("keydown", handleTab);
+  };
+}
+
+function handleEsc(event) {
+  if (event.key === "Escape") {
+    closeMenu();
+  }
 }
 
 function openMenu() {
-  const body = document.body;
-  const menu = qs(".mobile-menu");
-  const toggle = qs(".menu-toggle");
+  const menu = qs("#mobileMenu");
+  const toggle = qs("[data-open-menu]");
+  if (!menu || !toggle) return;
 
-  addClass(body, "menu-open");
-  addClass(menu, "is-open");
-  addClass(toggle, "is-active");
+  if (menu.getAttribute("aria-hidden") === "false") return;
 
-  lastFocusedEl = document.activeElement;
-  trapFocus(menu);
+  lastFocusedEl = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+  menu.setAttribute("aria-hidden", "false");
+  toggle.setAttribute("aria-expanded", "true");
+  addClass(document.body, "menu-open");
+
+  releaseFocusTrap = trapFocus(menu);
 
   document.addEventListener("keydown", handleEsc);
 }
 
 function closeMenu() {
-  const body = document.body;
-  const menu = qs(".mobile-menu");
-  const toggle = qs(".menu-toggle");
+  const menu = qs("#mobileMenu");
+  const toggle = qs("[data-open-menu]");
+  if (!menu || !toggle) return;
 
-  removeClass(body, "menu-open");
-  removeClass(menu, "is-open");
-  removeClass(toggle, "is-active");
+  if (menu.getAttribute("aria-hidden") === "true") return;
 
-  releaseFocus();
+  menu.setAttribute("aria-hidden", "true");
+  toggle.setAttribute("aria-expanded", "false");
+  removeClass(document.body, "menu-open");
+
+  if (releaseFocusTrap) {
+    releaseFocusTrap();
+    releaseFocusTrap = null;
+  }
 
   document.removeEventListener("keydown", handleEsc);
 
-  if (lastFocusedEl) lastFocusedEl.focus();
+  if (lastFocusedEl) {
+    lastFocusedEl.focus({ preventScroll: true });
+    lastFocusedEl = null;
+  }
 }
 
 function toggleMenu() {
-  document.body.classList.contains("menu-open") ? closeMenu() : openMenu();
-}
+  const menu = qs("#mobileMenu");
+  if (!menu) return;
 
-function handleEsc(e) {
-  if (e.key === "Escape") closeMenu();
-}
-
-// Focus trap
-let focusableEls = [];
-let firstEl, lastEl;
-
-function trapFocus(container) {
-  focusableEls = qsa(
-    "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])",
-    container
-  ).filter((el) => !el.disabled && el.offsetParent !== null);
-
-  firstEl = focusableEls[0];
-  lastEl = focusableEls[focusableEls.length - 1];
-
-  container.addEventListener("keydown", handleTab);
-}
-
-function releaseFocus() {
-  const menu = qs(".mobile-menu");
-  if (menu) menu.removeEventListener("keydown", handleTab);
-}
-
-function handleTab(e) {
-  if (e.key !== "Tab") return;
-
-  if (e.shiftKey) {
-    if (document.activeElement === firstEl) {
-      e.preventDefault();
-      lastEl.focus();
-    }
+  const isOpen = menu.getAttribute("aria-hidden") === "false";
+  if (isOpen) {
+    closeMenu();
   } else {
-    if (document.activeElement === lastEl) {
-      e.preventDefault();
-      firstEl.focus();
-    }
+    openMenu();
   }
 }
 
 export function initHeader() {
-  // Desktop active link sync
-  window.addEventListener("scroll", setActiveLink);
+  handleScroll();
+  window.addEventListener("scroll", handleScroll, { passive: true });
 
-  // Mobile menu toggle
-  const toggle = qs(".menu-toggle");
-  if (toggle) toggle.addEventListener("click", toggleMenu);
+  const toggle = qs("[data-open-menu]");
+  if (toggle) {
+    toggle.addEventListener("click", toggleMenu);
+  }
 
-  // Close menu on nav link click
-  qsa(".mobile-menu a").forEach((link) =>
-    link.addEventListener("click", closeMenu)
-  );
+  const menu = qs("#mobileMenu");
+  if (menu) {
+    qsa("[data-close-menu]", menu).forEach((el) => {
+      el.addEventListener("click", closeMenu);
+    });
+  }
 }
