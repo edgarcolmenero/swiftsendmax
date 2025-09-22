@@ -197,54 +197,91 @@
     <!-- ===========================
          WORK / PORTFOLIO (hover video previews)
          =========================== -->
-    <section id="work" class="ss-section ss-work" aria-labelledby="work-title" data-module="portfolioHover">
+    <section id="work" class="ss-section ss-work work" aria-labelledby="work-title" data-module="portfolioHover">
       <div class="container">
-        <header class="section-head" data-reveal>
-          <h2 id="work-title">Launch Files</h2>
-          <p class="lead">Three SwiftSend 2.0 builds proving speed, savings, and ownership.</p>
-        </header>
-
-        <div class="filters" role="tablist" aria-label="Portfolio filters" data-reveal>
-          <button role="tab" aria-selected="true" data-filter="all" class="pill" data-underline>All</button>
-          <button role="tab" aria-selected="false" data-filter="commerce" class="pill" data-underline>Commerce</button>
-          <button role="tab" aria-selected="false" data-filter="operations" class="pill" data-underline>Operations</button>
-          <button role="tab" aria-selected="false" data-filter="services" class="pill" data-underline>Services</button>
+        <div class="work__head" data-reveal>
+          <h2 id="work-title" class="work__title">Launch Files</h2>
+          <p class="lead work__sub">Four build sprints shipped for local founders — each pairing a payment-smart stack with ownable handoff docs.</p>
         </div>
 
-        <div class="work-grid" role="list">
-          <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
-            <div class="media">
-              <video muted preload="metadata" poster="./assets/img/nailtech-thumb.jpg" data-hover-video="./assets/video/nailtech-preview.webm"></video>
+        <div class="work__filters work-filter" role="tablist" aria-label="Portfolio filters" data-reveal>
+          <button type="button" role="tab" aria-selected="true" aria-controls="workGrid" data-filter="all" class="filter-chip" data-underline>All</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="workGrid" data-filter="realtor" class="filter-chip" data-underline>Realtor</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="workGrid" data-filter="beauty" class="filter-chip" data-underline>Beauty</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="workGrid" data-filter="creative" class="filter-chip" data-underline>Creative</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="workGrid" data-filter="smb" class="filter-chip" data-underline>SMB</button>
+        </div>
+
+        <div id="workGrid" class="work__grid work-grid" role="list" data-portfolio-grid>
+          <article class="work-card" role="listitem" data-tags="realtor smb" tabindex="0" data-reveal>
+            <div class="work-card__media">
+              <img src="./assets/img/realtor-thumb.jpg" alt="Realtor demo dashboard with featured listings" class="work-card__img" loading="lazy" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-src="./assets/video/realtor-preview.webm"></video>
+              <span class="work-card__play" aria-hidden="true">▶</span>
             </div>
-            <div class="meta">
-              <h3>GlowBar Express</h3>
-              <p class="tiny"><strong>Problem:</strong> Booking gaps and high card fees.</p>
-              <p class="tiny"><strong>Build:</strong> Mobile-first service menu, instant deposits, and bank-preferred checkout.</p>
-              <p class="tiny"><strong>Outcome:</strong> 28% lift in repeat bookings and $900/month in recovered margin.</p>
+            <div class="work-card__body">
+              <h3 class="work-card__title">RealtorDemo</h3>
+              <p class="work-card__meta tiny"><strong>Problem:</strong> Builder spec sheets and MLS blasts hitting spam folders.</p>
+              <p class="work-card__meta tiny"><strong>Build:</strong> React microsite system with instant listing sync, saved search alerts, and CRM hand-off.</p>
+              <p class="work-card__meta tiny"><strong>Outcome:</strong> 2.4&times; more referrals booked inside 30 days.</p>
+              <div class="work-card__tags" aria-label="Project categories">
+                <span class="work-tag">Realtor</span>
+                <span class="work-tag">SMB</span>
+              </div>
             </div>
           </article>
 
-          <article class="work-card" role="listitem" data-tags="operations" data-reveal>
-            <div class="media">
-              <video muted preload="metadata" poster="./assets/img/photo-thumb.jpg" data-hover-video="./assets/video/photo-preview.webm"></video>
+          <article class="work-card" role="listitem" data-tags="beauty smb" tabindex="0" data-reveal>
+            <div class="work-card__media">
+              <img src="./assets/img/nailtech-thumb.jpg" alt="Booking screen for NailTech Aamna" class="work-card__img" loading="lazy" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-src="./assets/video/nailtech-preview.webm"></video>
+              <span class="work-card__play" aria-hidden="true">▶</span>
             </div>
-            <div class="meta">
-              <h3>AtlasOps Dispatch</h3>
-              <p class="tiny"><strong>Problem:</strong> Field teams juggling spreadsheets.</p>
-              <p class="tiny"><strong>Build:</strong> Progressive web app with route planning, offline sync, and ops dashboards.</p>
-              <p class="tiny"><strong>Outcome:</strong> 3x faster job routing and same-day reporting.</p>
+            <div class="work-card__body">
+              <h3 class="work-card__title">NailTech Aamna</h3>
+              <p class="work-card__meta tiny"><strong>Problem:</strong> Booking gaps and high processor fees.</p>
+              <p class="work-card__meta tiny"><strong>Build:</strong> Mobile-first service menu with Express Checkout, deposit rules, and SMS confirmations.</p>
+              <p class="work-card__meta tiny"><strong>Outcome:</strong> 28% lift in repeat bookings and $900/month margin recovered.</p>
+              <div class="work-card__tags" aria-label="Project categories">
+                <span class="work-tag">Beauty</span>
+                <span class="work-tag">SMB</span>
+              </div>
             </div>
           </article>
 
-          <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
-            <div class="media">
-              <video muted preload="metadata" poster="./assets/img/realtor-thumb.jpg" data-hover-video="./assets/video/realtor-preview.webm"></video>
+          <article class="work-card" role="listitem" data-tags="creative smb" tabindex="0" data-reveal>
+            <div class="work-card__media">
+              <img src="./assets/img/photo-thumb.jpg" alt="Photographer portfolio landing page" class="work-card__img" loading="lazy" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-src="./assets/video/photo-preview.webm"></video>
+              <span class="work-card__play" aria-hidden="true">▶</span>
             </div>
-            <div class="meta">
-              <h3>PrimeAgent Hub</h3>
-              <p class="tiny"><strong>Problem:</strong> Template sites losing referral traffic.</p>
-              <p class="tiny"><strong>Build:</strong> Custom listing microsites, lead scoring, and CRM automations.</p>
-              <p class="tiny"><strong>Outcome:</strong> 41% more qualified leads in the first month.</p>
+            <div class="work-card__body">
+              <h3 class="work-card__title">Photographer Site</h3>
+              <p class="work-card__meta tiny"><strong>Problem:</strong> Gallery proofs scattered across Dropbox links.</p>
+              <p class="work-card__meta tiny"><strong>Build:</strong> Headless CMS with client proofing, Stripe paywalls, and automated delivery bundles.</p>
+              <p class="work-card__meta tiny"><strong>Outcome:</strong> 3x faster album approvals and upsells at checkout.</p>
+              <div class="work-card__tags" aria-label="Project categories">
+                <span class="work-tag">Creative</span>
+                <span class="work-tag">SMB</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="work-card" role="listitem" data-tags="beauty smb" tabindex="0" data-reveal>
+            <div class="work-card__media">
+              <img src="./assets/img/barber-thumb.jpg" alt="Barber appointment dashboard" class="work-card__img" loading="lazy" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-src="./assets/video/barber-preview.webm"></video>
+              <span class="work-card__play" aria-hidden="true">▶</span>
+            </div>
+            <div class="work-card__body">
+              <h3 class="work-card__title">Barber Demo</h3>
+              <p class="work-card__meta tiny"><strong>Problem:</strong> Walk-ins waiting and no-show fades hurting loyalty.</p>
+              <p class="work-card__meta tiny"><strong>Build:</strong> Self-check kiosk with waitlist SMS, chair assignments, and loyalty wallet tied to ACH.</p>
+              <p class="work-card__meta tiny"><strong>Outcome:</strong> 35% faster turns and fee savings rerouted to client rewards.</p>
+              <div class="work-card__tags" aria-label="Project categories">
+                <span class="work-tag">Beauty</span>
+                <span class="work-tag">SMB</span>
+              </div>
             </div>
           </article>
         </div>
