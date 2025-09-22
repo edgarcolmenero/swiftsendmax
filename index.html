@@ -36,27 +36,39 @@
   <!-- ===========================
        MOBILE MENU OVERLAY (non-sticky site)
        =========================== -->
-  <div id="mobileMenu" class="ss-mobile-menu" aria-hidden="true">
-    <button class="ss-menu-close" aria-label="Close menu" data-close-menu>&times;</button>
-    <nav class="ss-mobile-nav" aria-label="Mobile">
-      <a href="#home" data-close-menu>Home</a>
-      <a href="#services" data-close-menu>Services</a>
-      <a href="#work" data-close-menu>Work</a>
-      <a href="#labs" data-close-menu>Labs</a>
-      <a href="#packs" data-close-menu>Packs</a>
-      <a href="#about" data-close-menu>About</a>
-      <a href="#contact" data-close-menu>Contact</a>
-    </nav>
-    <div class="mobile-utilities">
-      <button class="icon-btn" aria-label="Search" data-icon="search" data-close-menu>
-        <span class="icon icon-search" aria-hidden="true"></span>
+  <div
+    id="mobileMenu"
+    class="ss-mobile-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+  >
+    <div class="ss-mobile-menu__inner">
+      <button
+        class="ss-menu-close"
+        type="button"
+        aria-label="Close menu"
+        data-close-menu
+      >
+        <span aria-hidden="true">&times;</span>
       </button>
-      <a href="#contact" class="icon-btn" aria-label="Contact SwiftSend" data-icon="phone" data-close-menu>
-        <span class="icon icon-phone" aria-hidden="true"></span>
+      <nav class="ss-mobile-nav" aria-label="Mobile">
+        <a href="#home" class="ss-mobile-link" data-close-menu data-underline>Home</a>
+        <a href="#services" class="ss-mobile-link" data-close-menu data-underline>Services</a>
+        <a href="#work" class="ss-mobile-link" data-close-menu data-underline>Work</a>
+        <a href="#labs" class="ss-mobile-link" data-close-menu data-underline>Labs</a>
+        <a href="#packs" class="ss-mobile-link" data-close-menu data-underline>Packs</a>
+        <a href="#about" class="ss-mobile-link" data-close-menu data-underline>About</a>
+        <a href="#contact" class="ss-mobile-link" data-close-menu data-underline>Contact</a>
+      </nav>
+      <a
+        href="#contact"
+        class="btn btn-primary btn-conic ss-mobile-cta"
+        data-close-menu
+        data-underline
+      >
+        Start a Build
       </a>
-      <button class="icon-btn" aria-label="Client Portal" data-icon="account" data-close-menu>
-        <span class="icon icon-account" aria-hidden="true"></span>
-      </button>
     </div>
   </div>
 
@@ -81,16 +93,15 @@
       </nav>
 
       <div class="header-actions">
-        <button class="icon-btn" aria-label="Search" data-icon="search">
-          <span class="icon icon-search" aria-hidden="true"></span>
-        </button>
-        <a href="#contact" class="icon-btn" aria-label="Contact SwiftSend" data-icon="phone">
-          <span class="icon icon-phone" aria-hidden="true"></span>
-        </a>
-        <button class="icon-btn" aria-label="Client Portal" data-icon="account">
-          <span class="icon icon-account" aria-hidden="true"></span>
-        </button>
-        <button class="hamburger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false" data-open-menu>
+        <a href="#contact" class="btn btn-primary header-cta" data-underline>Start a Build</a>
+        <button
+          class="hamburger"
+          type="button"
+          aria-label="Open menu"
+          aria-controls="mobileMenu"
+          aria-expanded="false"
+          data-open-menu
+        >
           <span></span><span></span><span></span>
         </button>
       </div>
