@@ -1,7 +1,7 @@
 // /scripts/modules/header.js
 // Desktop active link sync + mobile full-screen menu toggle with focus trap
 
-import { qs, qsa, addClass, removeClass, toggleClass } from "../utils/dom.js";
+import { qs, qsa, addClass, removeClass } from "../utils/dom.js";
 
 let lastActiveLink = null;
 let lastFocusedEl = null;
@@ -13,8 +13,12 @@ function setActiveLink() {
   links.forEach((link) => {
     const section = qs(link.getAttribute("href"));
     if (section && section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-      if (lastActiveLink) lastActiveLink.classList.remove("is-active");
+      if (lastActiveLink) {
+        lastActiveLink.classList.remove("is-active");
+        lastActiveLink.removeAttribute("aria-current");
+      }
       link.classList.add("is-active");
+      link.setAttribute("aria-current", "page");
       lastActiveLink = link;
     }
   });
@@ -28,6 +32,8 @@ function openMenu() {
   addClass(body, "menu-open");
   addClass(menu, "is-open");
   addClass(toggle, "is-active");
+  if (toggle) toggle.setAttribute("aria-expanded", "true");
+  if (menu) menu.setAttribute("aria-hidden", "false");
 
   lastFocusedEl = document.activeElement;
   trapFocus(menu);
@@ -43,6 +49,8 @@ function closeMenu() {
   removeClass(body, "menu-open");
   removeClass(menu, "is-open");
   removeClass(toggle, "is-active");
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+  if (menu) menu.setAttribute("aria-hidden", "true");
 
   releaseFocus();
 
@@ -99,10 +107,14 @@ function handleTab(e) {
 export function initHeader() {
   // Desktop active link sync
   window.addEventListener("scroll", setActiveLink);
+  setActiveLink();
 
   // Mobile menu toggle
   const toggle = qs(".menu-toggle");
   if (toggle) toggle.addEventListener("click", toggleMenu);
+
+  const closeButton = qs(".mobile-menu__close");
+  if (closeButton) closeButton.addEventListener("click", closeMenu);
 
   // Close menu on nav link click
   qsa(".mobile-menu a").forEach((link) =>

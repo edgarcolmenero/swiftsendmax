@@ -1,153 +1,143 @@
 /* =========================================
-   SwiftSendMax 1.0 — COMPONENTS CSS
-   Buttons, cards, pills, nav, badges, forms
+   SwiftSend 2.0 — Component primitives
+   Buttons, pills, icon system, form helpers
    ========================================= */
 
-/* ------- BUTTONS ------- */
+/* ---------------------------
+   1) Button refinements
+   --------------------------- */
 .btn {
-    cursor: pointer;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: center;
+  transition: transform var(--dur-quick) var(--elevate);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+[data-magnetic] {
+  transition: transform var(--dur-base) var(--elevate);
+}
+
+/* ---------------------------
+   2) Pills & chips
+   --------------------------- */
+.pill {
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease), color var(--dur-quick) var(--ease);
+}
+
+.pill[aria-pressed="true"],
+.pill[aria-selected="true"] {
+  background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(214,60,255,0.35);
+}
+
+.chip {
+  font-size: var(--fs-200);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* ---------------------------
+   3) Card typography tweaks
+   --------------------------- */
+.card h3 { font-size: var(--fs-500); font-weight: 600; }
+.card p  { font-size: var(--fs-400); color: var(--muted); }
+
+/* ---------------------------
+   4) Icon system
+   --------------------------- */
+:root {
+  --icon-service-platforms: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%273%27%20y%3D%275%27%20width%3D%2718%27%20height%3D%2714%27%20rx%3D%273%27/%3E%3Cpath%20d%3D%27M9%205v14M3%2010h18%27/%3E%3C/svg%3E');
+  --icon-service-data: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276%27%20rx%3D%276%27%20ry%3D%273%27/%3E%3Cpath%20d%3D%27M6%206v6c0%201.7%202.7%203%206%203s6-1.3%206-3V6M6%2012v6c0%201.7%202.7%203%206%203s6-1.3%206-3v-6%27/%3E%3C/svg%3E');
+  --icon-service-automation: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%273.5%27/%3E%3Cpath%20d%3D%27M12%205V3M12%2021v-2M5%2012H3M21%2012h-2M6.8%206.8L5.4%205.4M18.6%2018.6l-1.4-1.4M6.8%2017.2L5.4%2018.6M18.6%205.4l-1.4%201.4%27/%3E%3C/svg%3E');
+  --icon-service-payments: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%273%27%20y%3D%276%27%20width%3D%2718%27%20height%3D%2712%27%20rx%3D%272%27/%3E%3Cpath%20d%3D%27M3%2010h18M8%2015h3%27/%3E%3Cpath%20d%3D%27M14.5%2014.5l2%202%203.5-3.5%27/%3E%3C/svg%3E');
+  --icon-service-growth: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M4%2016l5-5%203%203%207-7%27/%3E%3Cpath%20d%3D%27M16%207h5v5%27/%3E%3C/svg%3E');
+  --icon-service-enablement: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M4%206h6a3%203%200%20013%203v12a3%203%200%2000-3-3H4z%27/%3E%3Cpath%20d%3D%27M20%206h-6a3%203%200%2000-3%203v12a3%203%200%20013-3h6z%27/%3E%3Cpath%20d%3D%27M9%2010h1.5M14%2010h2%27/%3E%3C/svg%3E');
+  --icon-lab-checkout: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M6%207l1-3h10l1%203%27/%3E%3Cpath%20d%3D%27M5%207h14l-1%2012H6z%27/%3E%3Cpath%20d%3D%27M10%2011h4%27/%3E%3C/svg%3E');
+  --icon-lab-site: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%273%27%20y%3D%274%27%20width%3D%2718%27%20height%3D%2714%27%20rx%3D%272%27/%3E%3Cpath%20d%3D%27M3%209h18M8%2013h8%27/%3E%3C/svg%3E');
+  --icon-lab-fees: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M7%2017l10-10%27/%3E%3Ccircle%20cx%3D%278%27%20cy%3D%278%27%20r%3D%272%27/%3E%3Ccircle%20cx%3D%2716%27%20cy%3D%2716%27%20r%3D%272%27/%3E%3C/svg%3E');
+  --icon-lab-leads: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M4%206h16l-5%207v5l-6%203v-8z%27/%3E%3C/svg%3E');
+  --icon-lab-docs: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M6%203h8l4%204v14H6z%27/%3E%3Cpath%20d%3D%27M14%203v4h4%27/%3E%3Cpath%20d%3D%27M9%2013h6M9%2017h6%27/%3E%3C/svg%3E');
+  --icon-phone: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M5.5%202h4l1.5%205-2.5%202a11%2011%200%20006.5%206.5l2-2.5%205%201.5v4a2%202%200%2001-2%202A17%2017%200%20015%204a2%202%200%20012-2z%27/%3E%3C/svg%3E');
+  --icon-mail: url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%273%27%20y%3D%275%27%20width%3D%2718%27%20height%3D%2714%27%20rx%3D%272%27/%3E%3Cpath%20d%3D%27M3%207l9%207%209-7%27/%3E%3C/svg%3E');
+}
+
+.icon {
+  --icon-size: 26px;
+  --icon-mask: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(214,60,255,0.92), rgba(255,122,0,0.92));
+  box-shadow: 0 10px 28px rgba(177,76,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.06);
+  -webkit-mask-image: var(--icon-mask);
+  mask-image: var(--icon-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+
+.icon::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.35), rgba(255,255,255,0));
+  filter: blur(8px);
+  opacity: 0.45;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.icon--sm { --icon-size: 22px; -webkit-mask-size: 18px 18px; mask-size: 18px 18px; }
+
+.icon-service-platforms { --icon-mask: var(--icon-service-platforms); }
+.icon-service-data { --icon-mask: var(--icon-service-data); }
+.icon-service-automation { --icon-mask: var(--icon-service-automation); }
+.icon-service-payments { --icon-mask: var(--icon-service-payments); }
+.icon-service-growth { --icon-mask: var(--icon-service-growth); }
+.icon-service-enablement { --icon-mask: var(--icon-service-enablement); }
+.icon-lab-checkout { --icon-mask: var(--icon-lab-checkout); }
+.icon-lab-site { --icon-mask: var(--icon-lab-site); }
+.icon-lab-fees { --icon-mask: var(--icon-lab-fees); }
+.icon-lab-leads { --icon-mask: var(--icon-lab-leads); }
+.icon-lab-docs { --icon-mask: var(--icon-lab-docs); }
+.icon-phone { --icon-mask: var(--icon-phone); }
+.icon-mail { --icon-mask: var(--icon-mail); }
+
+/* Fallback if mask-image is unsupported */
+@supports not ((-webkit-mask-image: linear-gradient(#000,#000)) or (mask-image: linear-gradient(#000,#000))) {
+  .icon {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+    background-image: var(--icon-mask);
   }
-  .btn-primary { color: #fff; }
-  .btn-ghost { color: var(--text); }
-  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  
-  /* Magnetic hover handled in JS, but add smooth base */
-  [data-magnetic] { transition: transform var(--dur-base) var(--elevate); }
-  
-  /* ------- PILLS ------- */
-  .pill {
-    font-size: var(--fs-300);
-    cursor: pointer;
-    transition: background var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease);
-  }
-  .pill[aria-selected="true"] {
-    background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange));
-    border-color: transparent;
-    color: #fff;
-  }
-  
-  /* ------- CHIPS ------- */
-  .chip {
-    font-size: var(--fs-200);
-    padding: 6px 12px;
-    border-radius: var(--radius-pill);
-    background: rgba(255,255,255,0.05);
-  }
-  
-  /* ------- CARDS ------- */
-  .card h3 { font-size: var(--fs-500); font-weight: 600; }
-  .card p { font-size: var(--fs-400); color: var(--muted); }
-  
-  /* Labs special pulse animation hook (animated in effects.css) */
-  .card.lab { position: relative; }
-  
-  /* ------- WORK CARDS ------- */
-  .work-card { transition: transform var(--dur-base) var(--elevate); }
-  .work-card:hover { transform: translateY(-4px); }
-  .work-card .meta h3 { font-size: var(--fs-500); margin-bottom: 4px; }
-  .work-card .meta p.tiny { line-height: 1.4; }
-  
-  /* ------- PACKS ------- */
-  .pack .list li { font-size: var(--fs-400); }
-  .pack .btn { margin-top: auto; }
-  
-  /* Popular pack marker */
-  .pack.popular { position: relative; }
-  .pack.popular .pill-popular {
-    position: absolute; top: 12px; right: 12px;
-  }
-  
-  /* ------- NAV LINKS ------- */
-  .nav-link {
-    font-size: var(--fs-400);
-    color: var(--text);
-    padding: 6px 0;
-    position: relative;
-  }
-  
-  /* Sequential underline hook handled in effects.css */
-  .nav-link[data-underline] { }
-  
-  /* ------- MOBILE MENU ------- */
-  .ss-mobile-menu a {
-    font-size: var(--fs-500);
-    font-weight: 600;
-    padding: 12px 0;
-  }
-  .ss-mobile-menu .btn { margin-top: 16px; }
-  
-  /* ------- PORTRAIT ORBIT ------- */
-  .portrait-wrap { border-radius: 50%; overflow: hidden; }
-  .portrait-orbits {
-    pointer-events: none;
-  }
-  .portrait-orbits .orbit {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px dashed rgba(255,255,255,0.25);
-    animation: orbit-rotate 16s linear infinite;
-  }
-  .portrait-orbits .o1 { inset: -8%; animation-duration: 18s; }
-  .portrait-orbits .o2 { inset: -14%; animation-duration: 26s; }
-  .portrait-orbits .o3 { inset: -20%; animation-duration: 34s; }
-  
-  @keyframes orbit-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  
-  /* ------- BADGES ------- */
-  .badge {
-    font-size: var(--fs-200);
-    padding: 6px 12px;
-    border-radius: var(--radius-pill);
-    background: rgba(255,255,255,0.05);
-    border: var(--border);
-  }
-  
-  /* ------- FORMS ------- */
-  form label { display: block; }
-  form input, form select, form textarea {
-    font-size: var(--fs-400);
-    transition: border-color var(--dur-quick) var(--ease), box-shadow var(--dur-quick) var(--ease);
-  }
-  form input:focus, form select:focus, form textarea:focus {
-    border-color: var(--swift-purple);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(214,60,255,0.25);
-  }
-  form button[type="submit"] { margin-top: 14px; }
-  
-  /* Form status messages */
-  .form-status { font-size: var(--fs-300); margin-top: 8px; }
-  
-  /* Savings estimator */
-  .savings h3 { font-size: var(--fs-500); margin-bottom: 8px; }
-  .savings .result { font-size: var(--fs-400); }
-  
-  /* ------- FOOTER FLOATS ------- */
-  .footer-float {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.08;
-    animation: float-pulse 16s ease-in-out infinite alternate;
-  }
-  .footer-float.float-1 {
-    width: 220px; height: 220px; background: var(--swift-purple);
-    bottom: -60px; left: 10%;
-  }
-  .footer-float.float-2 {
-    width: 160px; height: 160px; background: var(--swift-orange);
-    bottom: -40px; right: 20%;
-    animation-delay: 4s;
-  }
-  
-  @keyframes float-pulse {
-    from { transform: translateY(0) scale(1); }
-    to { transform: translateY(-20px) scale(1.05); }
-  }
-  
+}
+
+/* ---------------------------
+   5) Form feedback
+   --------------------------- */
+.form-status {
+  font-size: var(--fs-300);
+  margin-top: 8px;
+  color: var(--muted);
+}
