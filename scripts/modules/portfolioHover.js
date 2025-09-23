@@ -1,7 +1,12 @@
 // /scripts/modules/portfolioHover.js
 // Work cards filtering + hover-play videos
 
-import { qs, qsa } from "../utils/dom.js";
+import { qsa } from "../utils/dom.js";
+
+function getCategories(card) {
+  const raw = card.dataset.categories || card.dataset.category || "";
+  return raw.split(/[,\s]+/).filter(Boolean);
+}
 
 function handleFilterClick(e) {
   const btn = e.currentTarget;
@@ -15,14 +20,21 @@ function handleFilterClick(e) {
 
   // Show/hide cards
   qsa(".work-card").forEach((card) => {
-    const match = category === "all" || card.dataset.category === category;
+    const categories = getCategories(card);
+    const match = category === "all" || categories.includes(category);
     card.classList.toggle("is-hidden", !match);
+    card.setAttribute("aria-hidden", String(!match));
   });
 }
 
 function enableVideoHover(card) {
   const video = card.querySelector("video");
   if (!video) return;
+
+  const { hoverVideo } = video.dataset;
+  if (hoverVideo && !video.src) {
+    video.src = hoverVideo;
+  }
 
   const play = () => {
     video.play().catch(() => {});

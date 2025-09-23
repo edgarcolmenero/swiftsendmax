@@ -23,7 +23,7 @@ function handleDemoClick(e) {
 
 export function initLabsGlow() {
   // Hover effects
-  qsa(".labs-card").forEach(addHoverEffects);
+  qsa(".lab-card").forEach(addHoverEffects);
 
   // Demo launch buttons
   qsa("[data-demo]").forEach((btn) =>
