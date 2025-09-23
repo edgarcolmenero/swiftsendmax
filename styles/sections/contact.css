@@ -278,7 +278,8 @@
   }
   
   /* Result banner */
-  .estimator__result{
+  .estimator__result,
+  .estimator .result{
     display: grid;
     gap: 6px;
     border: 1px solid var(--ss-border);
@@ -289,9 +290,14 @@
       radial-gradient(80% 80% at 50% 30%, rgba(177,76,255,.18), rgba(177,76,255,0));
   }
   
-  .estimator__value{
+  .estimator__value,
+  .estimator .result strong{
     font-weight: 800;
     font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  }
+  .estimator .result__monthly{
+    color: var(--ss-text-dim);
+    font-size: .92rem;
   }
   .estimator__note{
     color: var(--ss-text-dim);

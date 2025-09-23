@@ -1,55 +1,71 @@
 // /scripts/modules/savingsEstimator.js
-// Savings Estimator logic: sliders + pills update computed monthly/yearly savings
+// Savings Estimator logic: compute annual savings based on ACH shift assumptions
 
 import { qs, qsa } from "../utils/dom.js";
 
-function updateValues() {
-  const sliders = qsa(".estimator [type='range']");
-  const pills = qsa(".estimator [data-value]");
+const CARD_RATE = 0.029;
+const CARD_FIXED = 0.3;
+const ACH_RATE = 0.008;
+const ACH_FIXED = 0.05;
 
-  let base = 0;
+function formatCurrency(value) {
+  return `$${Math.round(value).toLocaleString()}`;
+}
 
-  sliders.forEach((slider) => {
-    base += parseInt(slider.value, 10) || 0;
-  });
+function calculateSavings(volume, ticket, achPercent) {
+  if (!volume || !ticket || achPercent <= 0) return 0;
 
-  pills.forEach((pill) => {
-    if (pill.getAttribute("aria-pressed") === "true") {
-      base += parseInt(pill.dataset.value, 10) || 0;
-    }
-  });
+  const transactions = volume / ticket;
+  const shiftedRatio = Math.min(Math.max(achPercent, 0), 100) / 100;
+  const shiftedVolume = volume * shiftedRatio;
+  const shiftedTransactions = transactions * shiftedRatio;
 
-  const monthly = base;
+  const cardCost = shiftedVolume * CARD_RATE + shiftedTransactions * CARD_FIXED;
+  const achCost = shiftedVolume * ACH_RATE + shiftedTransactions * ACH_FIXED;
+
+  return Math.max(cardCost - achCost, 0);
+}
+
+function updateEstimator(form) {
+  const volume = Number(form.volume.value);
+  const ticket = Number(form.ticket.value);
+  const ach = Number(form.ach.value);
+
+  const monthly = calculateSavings(volume, ticket, ach);
   const yearly = monthly * 12;
 
-  const valEl = qs(".estimator__value");
-  if (valEl) valEl.textContent = `$${monthly.toLocaleString()}/mo`;
+  const result = form.querySelector(".result");
+  if (!result) return;
 
-  const yearEl = qs(".estimator__yearly");
-  if (yearEl) yearEl.textContent = `$${yearly.toLocaleString()}/yr`;
-}
+  if (!monthly) {
+    result.textContent = "$0 estimated / year";
+    return;
+  }
 
-function handleSlider(e) {
-  const out = e.target.nextElementSibling;
-  if (out) out.textContent = e.target.value;
-  updateValues();
-}
-
-function handlePillClick(e) {
-  const btn = e.currentTarget;
-  const pressed = btn.getAttribute("aria-pressed") === "true";
-  btn.setAttribute("aria-pressed", String(!pressed));
-  updateValues();
+  result.innerHTML = `<strong>${formatCurrency(yearly)}</strong> estimated / year <span class="result__monthly">(${formatCurrency(
+    monthly
+  )} per month)</span>`;
 }
 
 export function initSavingsEstimator() {
-  qsa(".estimator [type='range']").forEach((slider) =>
-    slider.addEventListener("input", handleSlider)
-  );
+  const form = qs("#savingsForm.estimator");
+  if (!form) return;
 
-  qsa(".estimator [data-value]").forEach((pill) =>
-    pill.addEventListener("click", handlePillClick)
-  );
+  const inputs = qsa("input", form);
+  inputs.forEach((input) => {
+    const field = input.closest(".field");
 
-  updateValues();
+    const handle = () => {
+      if (field) {
+        field.classList.toggle("is-filled", Boolean(input.value));
+      }
+      updateEstimator(form);
+    };
+
+    handle();
+    input.addEventListener("input", handle);
+  });
+
 }
+
+export default initSavingsEstimator;

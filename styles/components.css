@@ -68,14 +68,6 @@
   /* Sequential underline hook handled in effects.css */
   .nav-link[data-underline] { }
   
-  /* ------- MOBILE MENU ------- */
-  .ss-mobile-menu a {
-    font-size: var(--fs-500);
-    font-weight: 600;
-    padding: 12px 0;
-  }
-  .ss-mobile-menu .btn { margin-top: 16px; }
-  
   /* ------- PORTRAIT ORBIT ------- */
   .portrait-wrap { border-radius: 50%; overflow: hidden; }
   .portrait-orbits {
@@ -124,6 +116,16 @@
   /* Savings estimator */
   .savings h3 { font-size: var(--fs-500); margin-bottom: 8px; }
   .savings .result { font-size: var(--fs-400); }
+
+  /* Play glyph */
+  .icon-play {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid rgba(255,255,255,0.9);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
   
   /* ------- FOOTER FLOATS ------- */
   .footer-float {
