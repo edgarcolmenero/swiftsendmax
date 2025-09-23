@@ -12,8 +12,9 @@ const SELECTOR = '[data-reveal]';
 const CHILD_SELECTOR = '[data-reveal-child]';
 const DEFAULT_KIND = 'slide-up';
 
-const EASE = 'cubic-bezier(.2,.7,.2,1)';
-const BASE_MS = 600;
+const EASE = 'cubic-bezier(.25,.8,.25,1)';
+const BASE_MS = 420;
+const OBSERVER_OPTS = { threshold: 0.18, rootMargin: '0px' };
 
 function applyInitStyles(el, kind) {
   // Guard double-init
@@ -32,7 +33,7 @@ function applyInitStyles(el, kind) {
       break;
     case 'slide-up':
     default:
-      el.style.transform = 'translateY(18px)';
+      el.style.transform = 'translateY(8px)';
       break;
   }
 }
@@ -78,7 +79,7 @@ function initIndividual(els) {
     const el = entry.target;
     const delay = parseInt(el.getAttribute('data-reveal-delay') || '0', 10) || 0;
     revealWithTransition(el, delay);
-  });
+  }, { once: true, ...OBSERVER_OPTS });
 }
 
 function initStaggered(containers) {
@@ -104,7 +105,7 @@ function initStaggered(containers) {
         revealWithTransition(el, d);
       });
       container.removeAttribute('data-reveal-stagger');
-    }, { once: true });
+    }, { once: true, ...OBSERVER_OPTS });
   });
 }
 

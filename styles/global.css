@@ -130,12 +130,15 @@ body.ss-body {
 .accent { background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* Links & underline interaction baseline (enhanced in effects.css) */
-a[data-underline] {
+.u-underline,
+[data-underline] {
   position: relative;
   text-decoration: none;
   overflow: hidden;
 }
-a[data-underline]::after {
+
+.u-underline::after,
+[data-underline]::after {
   content: "";
   position: absolute;
   left: 0;
@@ -152,17 +155,33 @@ a[data-underline]:focus-visible::after { transform: scaleX(1); }
 
 /* Buttons */
 .btn {
+  --magnet-x: 0px;
+  --magnet-y: 0px;
   display: inline-flex; align-items: center; justify-content: center;
   gap: 10px; padding: 12px 18px;
   border-radius: var(--radius-pill);
   border: var(--border);
   background: rgba(255,255,255,0.04);
   backdrop-filter: blur(6px);
+  transform: translate(var(--magnet-x), var(--magnet-y));
   transition: transform var(--dur-quick) var(--elevate), box-shadow var(--dur-quick) var(--ease), background var(--dur-quick) var(--ease);
   will-change: transform, box-shadow;
 }
-.btn:hover { transform: translateY(-1.5px); box-shadow: var(--shadow-glow); }
-.btn:active { transform: translateY(0); }
+.btn:hover {
+  transform: translate(var(--magnet-x), calc(var(--magnet-y) - 1.5px));
+  box-shadow: var(--shadow-glow);
+}
+.btn:active { transform: translate(var(--magnet-x), var(--magnet-y)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none !important;
+  }
+  .btn:hover {
+    transform: translate(var(--magnet-x), var(--magnet-y));
+    box-shadow: var(--shadow-glow);
+  }
+}
 
 .btn-primary {
   border-color: transparent;

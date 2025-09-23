@@ -5,216 +5,255 @@
 
 /* ---------------------------
    1) Sequential Underline
+   - Works for both [data-underline] and .u-underline
+   - JS sets --underline-origin (0..1) & optional order
    --------------------------- */
-  a[data-underline] {
-    position: relative;
-    overflow: hidden;
+
+.u-underline,
+[data-underline] {
+  --underline-duration: 320ms;
+  --underline-origin: .5; /* centered fallback */
+  position: relative;
+  overflow: hidden;
+}
+
+.u-underline::after,
+[data-underline]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  /* falls back to project accents if present */
+  background: linear-gradient(90deg, var(--swift-purple, #d63cff), var(--swift-orange, #ff7a18));
+  transform: scaleX(0);
+  transform-origin: calc(var(--underline-origin, .5) * 100%) 50%;
+  transition: transform var(--underline-duration) var(--ease, cubic-bezier(.25,.8,.25,1));
+}
+
+.u-underline.is-underline-active::after,
+[data-underline].is-underline-active::after,
+.u-underline:where(:hover, :focus-visible)::after,
+[data-underline]:where(:hover, :focus-visible)::after,
+a[data-underline][data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* Slightly deeper offset for nav links that use the underline */
+.nav-link.u-underline::after,
+.nav-link[data-underline]::after {
+  bottom: -6px;
+}
+
+/* ---------------------------
+   2) Conic Sweep Button Glow
+   --------------------------- */
+@keyframes conic-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.btn-conic::after {
+  content: "";
+  position: absolute; inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg,
+    rgba(214,60,255,0.6),
+    rgba(255,122,0,0.6),
+    rgba(255,77,210,0.6),
+    rgba(214,60,255,0.6)
+  );
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 160ms cubic-bezier(.25,.8,.25,1);
+  animation: conic-spin 4s linear infinite;
+  z-index: -1;
+}
+.btn-conic:where(:hover, :focus-visible)::after { opacity: 0.45; }
+
+/* ---------------------------
+   3) Labs Card Pulse (border)
+   --------------------------- */
+@keyframes labs-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214,60,255,0.0), 0 0 0 0 rgba(255,122,0,0.0); }
+  50% { box-shadow: 0 0 12px 0 rgba(214,60,255,0.35), 0 0 24px 0 rgba(255,122,0,0.2); }
+}
+.labs-grid .card.lab:hover,
+.labs-grid .card.lab.is-visible {
+  animation: labs-pulse 2.8s ease-in-out infinite;
+}
+
+/* ---------------------------
+   4) Reveal-Once Easing
+   --------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 420ms var(--ease, cubic-bezier(.25,.8,.25,1)),
+              transform 420ms var(--ease, cubic-bezier(.25,.8,.25,1)),
+              filter 420ms var(--ease, cubic-bezier(.25,.8,.25,1));
+  filter: drop-shadow(0 0 18px rgba(255,255,255,0.06));
+}
+
+/* ---------------------------
+   5) Magnetic Hover Helpers
+   (JS sets transform; here we give a soft glow)
+   --------------------------- */
+[data-magnetic]:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35), 0 0 16px rgba(255,255,255,0.08);
+}
+
+/* ---------------------------
+   6) Starfield / Dust / Nebula
+   (CSS paints layers; JS may move them slightly)
+   --------------------------- */
+.stars-layer,
+.dust-layer,
+.nebula-layer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+.stars-layer {
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 30% 80%, rgba(255,255,255,0.8) 50%, transparent 51%),
+    radial-gradient(1.7px 1.7px at 70% 35%, rgba(255,255,255,0.85) 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 85% 60%, rgba(255,255,255,0.75) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 50% 50%, rgba(255,255,255,0.85) 50%, transparent 51%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+  opacity: 0.9;
+}
+
+.dust-layer {
+  background:
+    radial-gradient(1200px 800px at 80% -10%, rgba(214,60,255,0.08), transparent 60%),
+    radial-gradient(900px 700px at -10% 20%, rgba(255,122,0,0.08), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+.nebula-layer {
+  background:
+    radial-gradient(600px 400px at 20% 30%, rgba(214,60,255,0.16), transparent 60%),
+    radial-gradient(500px 380px at 70% 60%, rgba(255,122,0,0.12), transparent 60%);
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+/* Optional subtle drift (no JS): */
+@media (prefers-reduced-motion: no-preference) {
+  .stars-layer { animation: drift-stars 36s linear infinite alternate; }
+  .dust-layer  { animation: drift-dust  48s ease-in-out infinite alternate; }
+  .nebula-layer{ animation: drift-neb   60s ease-in-out infinite alternate; }
+}
+@keyframes drift-stars {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  100% { transform: translate3d(-1.2%, -1.2%, 0) scale(1.02); }
+}
+@keyframes drift-dust {
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(1%, -0.6%, 0); }
+}
+@keyframes drift-neb {
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-0.6%, 1%, 0); }
+}
+
+/* ---------------------------
+   7) Orbit Fields (Hero & Portrait)
+   --------------------------- */
+.orbit-field .orbit,
+.portrait-orbits .orbit {
+  border: 1px dashed rgba(255,255,255,0.22);
+  position: absolute;
+  border-radius: 50%;
+}
+.orbit-field .orbit-1 { width: 280px; height: 280px; animation: orbit-spin 18s linear infinite; }
+.orbit-field .orbit-2 { width: 360px; height: 360px; animation: orbit-spin 28s linear infinite reverse; }
+.orbit-field .orbit-3 { width: 460px; height: 460px; animation: orbit-spin 38s linear infinite; opacity: 0.7; }
+.orbit-field .orbit-4 { width: 560px; height: 560px; animation: orbit-spin 48s linear infinite reverse; opacity: 0.5; }
+
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Little glowing nodes that ride the orbits (decorative) */
+.orbit-field .orbit::before,
+.portrait-orbits .orbit::before {
+  content: ""; position: absolute;
+  top: -3px; left: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 18px rgba(214,60,255,0.55);
+  transform: translateX(-50%);
+}
+
+/* Keep hero logo above orbits */
+.hero-visual { position: relative; }
+.hero-logo { position: relative; z-index: 2; }
+.orbit-field { z-index: 1; }
+
+/* Portrait orbits minor glow */
+.portrait-orbits .orbit { box-shadow: inset 0 0 40px rgba(255,255,255,0.03); }
+
+/* ---------------------------
+   8) Portfolio Hover Sheen & Video Cue
+   --------------------------- */
+.work-card .media { position: relative; overflow: hidden; }
+.work-card .media::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  transform: translateX(-120%);
+  transition: transform 900ms var(--ease, cubic-bezier(.25,.8,.25,1));
+  pointer-events: none;
+}
+.work-card:where(:hover, :focus-within) .media::after {
+  transform: translateX(120%);
+}
+
+/* ---------------------------
+   9) Reduced Motion tweaks for specific effects
+   --------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .u-underline::after,
+  [data-underline]::after {
+    transition-duration: 40ms;
   }
-  a[data-underline]::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange));
-    transform: scaleX(0);
-    transform-origin: calc(var(--underline-origin, .5) * 100%) 50%;
-    transition: transform 260ms var(--ease);
-  }
-  a[data-underline][data-underline-ready="true"]::after {
-    transition: transform 320ms var(--ease);
-  }
-  a[data-underline]:hover::after,
-  a[data-underline]:focus-visible::after,
-  a[data-underline][data-active="true"]::after {
-    transform: scaleX(1);
-  }
-  
-  /* ---------------------------
-     2) Conic Sweep Button Glow
-     --------------------------- */
-  @keyframes conic-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+
   .btn-conic::after {
-    content: "";
-    position: absolute; inset: -2px;
-    border-radius: inherit;
-    background: conic-gradient(from 0deg, rgba(214,60,255,0.6), rgba(255,122,0,0.6), rgba(255,77,210,0.6), rgba(214,60,255,0.6));
-    filter: blur(12px);
-    opacity: 0;
-    transition: opacity var(--dur-base) var(--ease);
-    animation: conic-spin 4s linear infinite;
-    z-index: -1;
+    animation: none;
+    transition-duration: 40ms;
   }
-  .btn-conic:hover::after,
-  .btn-conic:focus-visible::after { opacity: 0.45; }
-  
-  /* ---------------------------
-     3) Labs Card Pulse (border)
-     --------------------------- */
-  @keyframes labs-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(214,60,255,0.0), 0 0 0 0 rgba(255,122,0,0.0); }
-    50% { box-shadow: 0 0 12px 0 rgba(214,60,255,0.35), 0 0 24px 0 rgba(255,122,0,0.2); }
+}
+
+/* ---------------------------
+   10) Focus Rings (accessible but stylish)
+   --------------------------- */
+:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(214,60,255,0.35), 0 0 0 6px rgba(214,60,255,0.15);
+  border-radius: 10px;
+}
+
+/* ---------------------------
+   11) Global Reduced Motion safety
+   --------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
-  .labs-grid .card.lab:hover,
-  .labs-grid .card.lab.is-visible {
-    animation: labs-pulse 2.8s ease-in-out infinite;
-  }
-  
-  /* ---------------------------
-     4) Reveal-Once Easing
-     --------------------------- */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  [data-reveal].is-visible {
-    opacity: 1; transform: translateY(0);
-    transition: opacity 560ms var(--ease), transform 560ms var(--ease), filter 560ms var(--ease);
-    filter: drop-shadow(0 0 18px rgba(255,255,255,0.06));
-  }
-  
-  /* ---------------------------
-     5) Magnetic Hover Helpers
-     (JS sets transform; here we give a soft glow)
-     --------------------------- */
-  [data-magnetic]:hover {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35), 0 0 16px rgba(255,255,255,0.08);
-  }
-  
-  /* ---------------------------
-     6) Starfield / Dust / Nebula
-     (CSS paints layers; JS may move them slightly)
-     --------------------------- */
-  .stars-layer,
-  .dust-layer,
-  .nebula-layer {
-    position: absolute; inset: 0;
-    pointer-events: none;
-  }
-  
-  .stars-layer {
-    background-image:
-      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9) 50%, transparent 51%),
-      radial-gradient(1.8px 1.8px at 30% 80%, rgba(255,255,255,0.8) 50%, transparent 51%),
-      radial-gradient(1.7px 1.7px at 70% 35%, rgba(255,255,255,0.85) 50%, transparent 51%),
-      radial-gradient(1.6px 1.6px at 85% 60%, rgba(255,255,255,0.75) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 50% 50%, rgba(255,255,255,0.85) 50%, transparent 51%);
-    background-repeat: no-repeat;
-    background-size: cover;
-    filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
-    opacity: 0.9;
-  }
-  
-  .dust-layer {
-    background:
-      radial-gradient(1200px 800px at 80% -10%, rgba(214,60,255,0.08), transparent 60%),
-      radial-gradient(900px 700px at -10% 20%, rgba(255,122,0,0.08), transparent 60%);
-    mix-blend-mode: screen;
-    opacity: 0.7;
-  }
-  
-  .nebula-layer {
-    background:
-      radial-gradient(600px 400px at 20% 30%, rgba(214,60,255,0.16), transparent 60%),
-      radial-gradient(500px 380px at 70% 60%, rgba(255,122,0,0.12), transparent 60%);
-    filter: blur(2px);
-    opacity: 0.7;
-  }
-  
-  /* Optional subtle drift (no JS): */
-  @media (prefers-reduced-motion: no-preference) {
-    .stars-layer { animation: drift-stars 36s linear infinite alternate; }
-    .dust-layer  { animation: drift-dust  48s ease-in-out infinite alternate; }
-    .nebula-layer{ animation: drift-neb   60s ease-in-out infinite alternate; }
-  }
-  @keyframes drift-stars {
-    0% { transform: translate3d(0,0,0) scale(1); }
-    100% { transform: translate3d(-1.2%, -1.2%, 0) scale(1.02); }
-  }
-  @keyframes drift-dust {
-    0% { transform: translate3d(0,0,0); }
-    100% { transform: translate3d(1%, -0.6%, 0); }
-  }
-  @keyframes drift-neb {
-    0% { transform: translate3d(0,0,0); }
-    100% { transform: translate3d(-0.6%, 1%, 0); }
-  }
-  
-  /* ---------------------------
-     7) Orbit Fields (Hero & Portrait)
-     --------------------------- */
-  .orbit-field .orbit,
-  .portrait-orbits .orbit {
-    border: 1px dashed rgba(255,255,255,0.22);
-    position: absolute;
-    border-radius: 50%;
-  }
-  .orbit-field .orbit-1 { width: 280px; height: 280px; animation: orbit-spin 18s linear infinite; }
-  .orbit-field .orbit-2 { width: 360px; height: 360px; animation: orbit-spin 28s linear infinite reverse; }
-  .orbit-field .orbit-3 { width: 460px; height: 460px; animation: orbit-spin 38s linear infinite; opacity: 0.7; }
-  .orbit-field .orbit-4 { width: 560px; height: 560px; animation: orbit-spin 48s linear infinite reverse; opacity: 0.5; }
-  
-  @keyframes orbit-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  
-  /* Little glowing nodes that ride the orbits (decorative) */
-  .orbit-field .orbit::before,
-  .portrait-orbits .orbit::before {
-    content: ""; position: absolute;
-    top: -3px; left: 50%;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 18px rgba(214,60,255,0.55);
-    transform: translateX(-50%);
-  }
-  
-  /* Keep hero logo above orbits */
-  .hero-visual { position: relative; }
-  .hero-logo { position: relative; z-index: 2; }
-  .orbit-field { z-index: 1; }
-  
-  /* Portrait orbits are already sized in components.css; minor glow: */
-  .portrait-orbits .orbit { box-shadow: inset 0 0 40px rgba(255,255,255,0.03); }
-  
-  /* ---------------------------
-     8) Portfolio Hover Sheen & Video Cue
-     --------------------------- */
-  .work-card .media { position: relative; overflow: hidden; }
-  .work-card .media::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-    transform: translateX(-120%);
-    transition: transform 900ms var(--ease);
-    pointer-events: none;
-  }
-  .work-card:hover .media::after,
-  .work-card:focus-within .media::after {
-    transform: translateX(120%);
-  }
-  
-  /* ---------------------------
-     10) Focus Rings (accessible but stylish)
-     --------------------------- */
-  :focus-visible {
-    outline: 0;
-    box-shadow: 0 0 0 3px rgba(214,60,255,0.35), 0 0 0 6px rgba(214,60,255,0.15);
-    border-radius: 10px;
-  }
-  
-  /* ---------------------------
-     11) Reduced Motion
-     --------------------------- */
-  @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-    .btn-conic::after { opacity: 0.2; }
-    .labs-grid .card.lab { animation: none !important; }
-    .work-card .media::after { transition: none; }
-  }
-  
+  .btn-conic::after { opacity: 0.2; }
+  .labs-grid .card.lab { animation: none !important; }
+  .work-card .media::after { transition: none; }
+}

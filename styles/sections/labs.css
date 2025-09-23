@@ -162,7 +162,7 @@
     display:inline-flex; align-items:center; gap:8px;
     transition: transform .2s var(--ease-out), opacity .2s var(--ease-out);
   }
-  .lab-card__link.u-underline::after{ bottom: 6px; height: 2px; }
+  .lab-card__link:where(.u-underline,[data-underline])::after{ bottom: 6px; height: 2px; }
   .lab-card__link:where(:hover,:focus-visible){ transform: translateY(-1px); }
   
   /* ---------- Staggered reveal ---------- */

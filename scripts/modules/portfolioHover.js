@@ -1,6 +1,6 @@
 // scripts/modules/portfolioHover.js
 // SwiftSendMax 1.0 — Portfolio filters + hover/focus video previews (vanilla ES module)
-// A11y-first: radio-like filter chips with roving focus, aria-selected/checked,
+// A11y-first: radio/tab-like chips with roving focus, aria-selected/checked,
 // keyboard arrows/Home/End, and proper aria-hidden/hidden on cards.
 // Perf: event delegation, minimal DOM reads, guards, no polling, no global leaks.
 
@@ -8,38 +8,43 @@ import { qs, qsa, prefersReducedMotion } from "../utils/dom.js";
 
 let _wired = false;
 
-// Support both historical selector shapes used in the project
-const FILTER_CONTAINER_SEL = ".work__filters, .work-filter";
-const FILTER_BTN_SEL = "[role='radio'], [data-filter]";
+/* ------------------------------- Selectors ------------------------------- */
+// Support all historical shapes used in the project
+const FILTER_CONTAINER_SELS = [".work__filters", ".work-filter", ".filters"];
+const FILTER_BTN_SEL = "[role='radio'], [role='tab'], [data-filter], [data-category]";
 const CARD_SELECTOR = ".work-card";
 
 // Accept multiple possible video hooks
-const VIDEO_SELECTOR = "video, .work-card__video";
+const VIDEO_SELECTOR = "video[data-hover-video], .work-card__video, video";
 
-// Helper: get category value from a filter button
+/* -------------------------------- Helpers -------------------------------- */
 function getFilterValue(btn) {
   return (
     btn?.dataset?.filter ||
+    btn?.dataset?.category ||
     btn?.getAttribute?.("data-filter") ||
+    btn?.getAttribute?.("data-category") ||
     btn?.getAttribute?.("aria-label") ||
     "all"
   ).toLowerCase();
 }
 
-// Helper: read tags from a card's data-tags
 function getTags(card) {
-  const ds = card?.dataset?.tags || "";
+  // Accept data-tags or data-category on cards
+  const ds = (card?.dataset?.tags || card?.dataset?.category || "").toLowerCase();
   return ds.split(/\s+/).filter(Boolean);
 }
 
-// Apply active visuals/aria to filter button set
 function setActiveButton(activeBtn, buttons) {
   buttons.forEach((btn) => {
     const isActive = btn === activeBtn;
-    // Support both role=radio and generic buttons
-    if (btn.getAttribute("role") === "radio") {
+    const role = btn.getAttribute("role");
+    if (role === "radio") {
       btn.setAttribute("aria-checked", String(isActive));
+    } else if (role === "tab") {
+      btn.setAttribute("aria-selected", String(isActive));
     } else {
+      // generic buttons
       btn.setAttribute("aria-selected", String(isActive));
     }
     btn.classList.toggle("is-active", isActive);
@@ -77,11 +82,16 @@ function playCardVideo(card) {
   if (!video) return;
   ensureVideoSrc(video);
   if (prefersReducedMotion()) return;
+  // Better autoplay odds
+  try {
+    video.muted = true;
+    video.playsInline = true;
+  } catch {}
   const p = video.play?.();
   if (p && typeof p.catch === "function") p.catch(() => {});
 }
 
-// Filter logic: show/hide cards by tag, a11y attributes aligned
+/* -------------------------------- Filtering -------------------------------- */
 function applyFilter(category, cards) {
   const cat = (category || "all").toLowerCase();
 
@@ -89,14 +99,12 @@ function applyFilter(category, cards) {
     const tags = getTags(card);
     const match = cat === "all" || tags.includes(cat);
 
-    // Visibility + a11y
     card.classList.toggle("is-hidden", !match);
     card.setAttribute("aria-hidden", String(!match));
-    // Mirror semantic "hidden" for assistive tech / tab stops
+
     if (!match) {
       card.setAttribute("hidden", "");
       card.tabIndex = -1;
-      // Stop preview if card is removed from view
       pauseCardVideo(card, true);
     } else {
       card.removeAttribute("hidden");
@@ -106,7 +114,6 @@ function applyFilter(category, cards) {
   });
 }
 
-// Keyboard support for filter chips (arrow keys, Home/End, Space/Enter)
 function handleFilterKeydown(event, buttons) {
   const { key, currentTarget } = event;
   const i = buttons.indexOf(currentTarget);
@@ -121,7 +128,9 @@ function handleFilterKeydown(event, buttons) {
     event.preventDefault();
     currentTarget.click();
     return;
-  } else return;
+  } else {
+    return;
+  }
 
   event.preventDefault();
   const btn = buttons[next];
@@ -129,86 +138,91 @@ function handleFilterKeydown(event, buttons) {
   btn?.click();
 }
 
-// Enhance a single card for hover/focus previews
+/* ----------------------------- Card Enhancements ----------------------------- */
 function enhanceCardPreview(card) {
   const onEnter = () => playCardVideo(card);
   const onLeave = () => pauseCardVideo(card, false);
 
-  // Pointer + keyboard focus
   card.addEventListener("mouseenter", onEnter);
   card.addEventListener("focusin", onEnter);
   card.addEventListener("mouseleave", onLeave);
   card.addEventListener("focusout", onLeave);
 }
 
-// Public init — idempotent
+/* ---------------------------------- Init ---------------------------------- */
 export function initPortfolioHover() {
   if (_wired) return;
   _wired = true;
 
-  // Cards
+  // Cards base a11y + preview wiring
   const cards = Array.from(qsa(CARD_SELECTOR));
   if (cards.length) {
     cards.forEach((card) => {
-      // Ensure base a11y state
       if (!card.hasAttribute("tabindex")) card.tabIndex = 0;
       card.setAttribute("aria-hidden", "false");
       enhanceCardPreview(card);
     });
 
-    // Pause videos if tab is hidden
+    // Pause videos if tab hidden
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) cards.forEach((c) => pauseCardVideo(c, true));
     });
   }
 
-  // Filters (support either container selector)
-  const filterContainer = qs(FILTER_CONTAINER_SEL);
-  const buttons = filterContainer ? Array.from(filterContainer.querySelectorAll(FILTER_BTN_SEL)) : [];
+  // Wire each filter container independently (event delegation per group)
+  const containers = FILTER_CONTAINER_SELS.flatMap((sel) => Array.from(qsa(sel)));
+  if (!containers.length) {
+    // No filters present — default show all
+    applyFilter("all", cards);
+    return;
+  }
 
-  if (buttons.length) {
-    // Initialize buttons: ensure type=button and roving tabindex
+  containers.forEach((container) => {
+    const buttons = Array.from(container.querySelectorAll(FILTER_BTN_SEL));
+    if (!buttons.length) return;
+
+    // Ensure type=button and initial roving tabindex
     buttons.forEach((btn) => {
       if (!btn.hasAttribute("type")) btn.type = "button";
-      // If markup already marks one active, keep it; else first becomes active
-      const isSelected =
-        btn.getAttribute("aria-checked") === "true" || btn.getAttribute("aria-selected") === "true";
-      btn.tabIndex = isSelected ? 0 : -1;
+      const selected =
+        btn.getAttribute("aria-checked") === "true" ||
+        btn.getAttribute("aria-selected") === "true" ||
+        btn.classList.contains("is-active");
+      btn.tabIndex = selected ? 0 : -1;
     });
 
-    // Find initially active or default to first
+    // Choose initial active (keep markup’s pick if present)
     const initial =
       buttons.find(
-        (b) => b.getAttribute("aria-checked") === "true" || b.getAttribute("aria-selected") === "true"
+        (b) =>
+          b.getAttribute("aria-checked") === "true" ||
+          b.getAttribute("aria-selected") === "true" ||
+          b.classList.contains("is-active")
       ) || buttons[0];
 
     if (initial) {
       setActiveButton(initial, buttons);
       applyFilter(getFilterValue(initial), cards);
     } else {
-      // Fallback: show all
       applyFilter("all", cards);
     }
 
-    // Event delegation for clicks (fast, minimal listeners)
-    filterContainer.addEventListener("click", (e) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
-      const btn = target.closest(FILTER_BTN_SEL);
-      if (!btn || !filterContainer.contains(btn)) return;
+    // Click delegation (fast, minimal listeners)
+    container.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const btn = t.closest(FILTER_BTN_SEL);
+      if (!btn || !container.contains(btn)) return;
 
       setActiveButton(btn, buttons);
       applyFilter(getFilterValue(btn), cards);
     });
 
-    // Single keydown handler per button to preserve a11y nav
+    // Keyboard nav per button (radio/tab behavior)
     buttons.forEach((btn) => {
       btn.addEventListener("keydown", (ev) => handleFilterKeydown(ev, buttons));
     });
-  } else {
-    // No filters in DOM — ensure default visible + previews still work
-    applyFilter("all", cards);
-  }
+  });
 }
 
 export default initPortfolioHover;
