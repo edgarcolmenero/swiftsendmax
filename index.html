@@ -32,7 +32,7 @@
   <!-- ===========================
        MOBILE MENU OVERLAY
        =========================== -->
-  <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" inert>
     <div class="mobile-menu__header">
       <a class="mobile-menu__logo" href="#home" data-close-menu>
         <img src="./assets/img/logo-s.svg" alt="" class="logo-mark" />
@@ -182,7 +182,7 @@
             </div>
           </div>
           <div class="hero__logo">
-            <img src="./assets/img/logo-s-orbital.svg" alt="SwiftSend emblem" />
+            <img src="./assets/img/logo-s-orbital.svg" alt="SwiftSend emblem" loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
@@ -267,18 +267,18 @@
           <p class="work__sub">Three SwiftSend 2.0 builds proving speed, savings, and ownership.</p>
         </div>
 
-        <div class="work__filters" role="tablist" aria-label="Portfolio filters" data-reveal>
-          <button role="tab" aria-selected="true" data-filter="all" class="filter-chip" data-underline>All</button>
-          <button role="tab" aria-selected="false" data-filter="commerce" class="filter-chip" data-underline>Commerce</button>
-          <button role="tab" aria-selected="false" data-filter="operations" class="filter-chip" data-underline>Operations</button>
-          <button role="tab" aria-selected="false" data-filter="services" class="filter-chip" data-underline>Services</button>
+        <div class="work__filters" role="radiogroup" aria-label="Portfolio filters" aria-orientation="horizontal" data-reveal>
+          <button type="button" role="radio" aria-checked="true" data-filter="all" class="filter-chip is-active" data-underline>All</button>
+          <button type="button" role="radio" aria-checked="false" data-filter="commerce" class="filter-chip" data-underline>Commerce</button>
+          <button type="button" role="radio" aria-checked="false" data-filter="operations" class="filter-chip" data-underline>Operations</button>
+          <button type="button" role="radio" aria-checked="false" data-filter="services" class="filter-chip" data-underline>Services</button>
         </div>
 
         <div class="work__grid" role="list">
           <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
             <div class="work-card__media">
-              <img src="./assets/img/nailtech-thumb.jpg" alt="GlowBar Express booking interface" class="work-card__img" />
-              <video class="work-card__video" muted preload="metadata" data-hover-video="./assets/video/nailtech-preview.webm"></video>
+              <img src="./assets/img/nailtech-thumb.jpg" alt="GlowBar Express booking interface" class="work-card__img" loading="lazy" decoding="async" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-video="./assets/video/nailtech-preview.webm"></video>
               <div class="work-card__play" aria-hidden="true">
                 <span class="icon icon-play"></span>
               </div>
@@ -297,8 +297,8 @@
 
           <article class="work-card" role="listitem" data-tags="operations" data-reveal>
             <div class="work-card__media">
-              <img src="./assets/img/photo-thumb.jpg" alt="AtlasOps dispatch PWA" class="work-card__img" />
-              <video class="work-card__video" muted preload="metadata" data-hover-video="./assets/video/photo-preview.webm"></video>
+              <img src="./assets/img/photo-thumb.jpg" alt="AtlasOps dispatch PWA" class="work-card__img" loading="lazy" decoding="async" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-video="./assets/video/photo-preview.webm"></video>
               <div class="work-card__play" aria-hidden="true">
                 <span class="icon icon-play"></span>
               </div>
@@ -317,8 +317,8 @@
 
           <article class="work-card" role="listitem" data-tags="commerce services" data-reveal>
             <div class="work-card__media">
-              <img src="./assets/img/realtor-thumb.jpg" alt="PrimeAgent Hub marketing site" class="work-card__img" />
-              <video class="work-card__video" muted preload="metadata" data-hover-video="./assets/video/realtor-preview.webm"></video>
+              <img src="./assets/img/realtor-thumb.jpg" alt="PrimeAgent Hub marketing site" class="work-card__img" loading="lazy" decoding="async" />
+              <video class="work-card__video" muted preload="metadata" playsinline data-hover-video="./assets/video/realtor-preview.webm"></video>
               <div class="work-card__play" aria-hidden="true">
                 <span class="icon icon-play"></span>
               </div>
@@ -426,7 +426,7 @@
       <div class="container about__grid">
         <div class="about__visual" data-reveal>
           <div class="about__portrait" aria-hidden="true">
-            <img src="./assets/img/edgar-portrait.jpg" alt="Edgar Colmenero portrait" class="about__img" />
+            <img src="./assets/img/edgar-portrait.jpg" alt="Edgar Colmenero portrait" class="about__img" loading="lazy" decoding="async" />
             <div class="about__orbits">
               <div class="orbit o1"></div>
               <div class="orbit o2"></div>

@@ -1,7 +1,7 @@
 // /scripts/modules/header.js
 // Accessible desktop navigation highlights + mobile full-screen menu with focus trapping
 
-import { qs, qsa, addClass, removeClass } from "../utils/dom.js";
+import { qs, qsa, addClass, removeClass, rafQueue } from "../utils/dom.js";
 
 const ACTIVE_OFFSET = 120;
 let toggleButton;
@@ -11,11 +11,13 @@ let focusableEls = [];
 let firstFocusable;
 let lastFocusable;
 
-function markActiveLink() {
+function computeActiveSectionId() {
   const sections = qsa("main section[id]");
-  const scrollY = window.scrollY + ACTIVE_OFFSET;
+  if (!sections.length) return null;
 
-  let currentId = sections[0]?.id;
+  const scrollY = window.scrollY + ACTIVE_OFFSET;
+  let currentId = sections[0].id;
+
   for (const section of sections) {
     if (section.offsetTop <= scrollY) {
       currentId = section.id;
@@ -24,9 +26,18 @@ function markActiveLink() {
     }
   }
 
-  qsa(".nav__link").forEach((link) => {
+  return currentId;
+}
+
+function updateActiveLinks() {
+  const currentId = computeActiveSectionId();
+  if (!currentId) return;
+
+  qsa(".nav__link, .mobile-menu__link").forEach((link) => {
     const href = link.getAttribute("href");
     const isActive = href === `#${currentId}`;
+    link.classList.toggle("is-active", isActive);
+
     if (isActive) {
       link.dataset.active = "true";
       link.setAttribute("aria-current", "page");
@@ -37,6 +48,8 @@ function markActiveLink() {
   });
 }
 
+const markActiveLink = rafQueue(updateActiveLinks);
+
 function setMenuState(open) {
   if (!mobileMenu || !toggleButton) return;
 
@@ -45,6 +58,12 @@ function setMenuState(open) {
   toggleButton.classList.toggle("is-active", open);
   mobileMenu.classList.toggle("is-open", open);
   document.body.classList.toggle("menu-open", open);
+
+  if (open) {
+    mobileMenu.removeAttribute("inert");
+  } else {
+    mobileMenu.setAttribute("inert", "");
+  }
 }
 
 function onTrapKeydown(event) {
@@ -108,6 +127,7 @@ export function closeMenu() {
   } else if (toggleButton) {
     toggleButton.focus({ preventScroll: true });
   }
+  previousFocus = null;
 }
 
 function handleToggle() {
@@ -143,11 +163,16 @@ function bindMobileMenu() {
 }
 
 export function initHeader() {
-  markActiveLink();
+  updateActiveLinks();
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("resize", markActiveLink);
+  window.addEventListener("hashchange", updateActiveLinks);
 
   bindMobileMenu();
+
+  if (mobileMenu && !mobileMenu.classList.contains("is-open")) {
+    mobileMenu.setAttribute("inert", "");
+  }
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {

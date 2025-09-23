@@ -1,7 +1,9 @@
 // /scripts/modules/portfolioHover.js
 // Work cards filtering + hover-play videos
 
-import { qsa } from "../utils/dom.js";
+import { qsa, prefersReducedMotion } from "../utils/dom.js";
+
+const FILTER_SELECTOR = ".work__filters [role='radio']";
 
 function applyFilter(category) {
   const cards = qsa(".work-card");
@@ -10,6 +12,14 @@ function applyFilter(category) {
     const match = category === "all" || tags.includes(category);
     card.classList.toggle("is-hidden", !match);
     card.setAttribute("aria-hidden", String(!match));
+    card.toggleAttribute("hidden", !match);
+
+    if (!match) {
+      const video = card.querySelector("video");
+      if (video) {
+        video.pause();
+      }
+    }
   });
 }
 
@@ -17,13 +27,38 @@ function handleFilterClick(event) {
   const btn = event.currentTarget;
   const category = btn.dataset.filter || "all";
 
-  qsa(".work__filters [role='tab']").forEach((chip) => {
+  qsa(FILTER_SELECTOR).forEach((chip) => {
     const isActive = chip === btn;
-    chip.setAttribute("aria-selected", String(isActive));
+    chip.setAttribute("aria-checked", String(isActive));
     chip.classList.toggle("is-active", isActive);
   });
 
   applyFilter(category);
+}
+
+function handleFilterKeydown(event) {
+  const { key } = event;
+  const radios = qsa(FILTER_SELECTOR);
+  const index = radios.indexOf(event.currentTarget);
+  if (index < 0) return;
+
+  let nextIndex = index;
+  if (key === "ArrowRight" || key === "ArrowDown") {
+    nextIndex = (index + 1) % radios.length;
+  } else if (key === "ArrowLeft" || key === "ArrowUp") {
+    nextIndex = (index - 1 + radios.length) % radios.length;
+  } else if (key === "Home") {
+    nextIndex = 0;
+  } else if (key === "End") {
+    nextIndex = radios.length - 1;
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  const target = radios[nextIndex];
+  target?.focus();
+  target?.click();
 }
 
 function enhanceVideo(card) {
@@ -43,7 +78,9 @@ function enhanceVideo(card) {
   const play = () => {
     ensureSource();
     video.currentTime = 0;
-    video.play().catch(() => {});
+    if (!prefersReducedMotion()) {
+      video.play().catch(() => {});
+    }
   };
 
   const pause = () => {
@@ -57,8 +94,9 @@ function enhanceVideo(card) {
 }
 
 export function initPortfolioHover() {
-  qsa(".work__filters [data-filter]").forEach((btn) => {
+  qsa(FILTER_SELECTOR).forEach((btn) => {
     btn.addEventListener("click", handleFilterClick);
+    btn.addEventListener("keydown", handleFilterKeydown);
   });
 
   applyFilter("all");

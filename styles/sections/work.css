@@ -76,7 +76,7 @@
   }
   .filter-chip:hover,
   .filter-chip:focus-visible{ transform: translateY(-1px); border-color: rgba(255,255,255,.24); }
-  .filter-chip[aria-pressed="true"],
+  .filter-chip[aria-checked="true"],
   .filter-chip.is-active{
     border-color: rgba(255,255,255,.32);
     box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset, 0 10px 26px rgba(0,0,0,.35);
