@@ -191,7 +191,7 @@
   }
   
   /* Optional: sequential underline for primary CTA labels */
-  .hero__ctas .btn.u-underline::after{ bottom: 8px; height: 2px; }
+  .hero__ctas .btn:where(.u-underline,[data-underline])::after{ bottom: 8px; height: 2px; }
   
   /* ---------- Right: Orbit Field + Logo ---------- */
   .hero__visual{

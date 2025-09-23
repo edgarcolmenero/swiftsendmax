@@ -1,46 +1,113 @@
 // /scripts/modules/processFlow.js
-// Optional step counters/auto-sequence sync
+// Sequential highlight for process steps when visible.
 
-import { qsa, addClass, removeClass } from "../utils/dom.js";
+import { qsa, prefersReducedMotion } from "../utils/dom.js";
+
+const STEP_SELECTOR = ".process-steps .step";
+const ACTIVE_CLASS = "is-active";
+const STEP_INTERVAL = 2400;
 
 let steps = [];
-let current = 0;
-let timer;
+let index = -1;
+let timer = 0;
+let inView = false;
+let reduceMotion = false;
 
-function activateStep(index) {
+function highlightStep(nextIndex) {
+  index = nextIndex;
   steps.forEach((step, i) => {
-    if (i === index) addClass(step, "is-active");
-    else removeClass(step, "is-active");
+    step.classList.toggle(ACTIVE_CLASS, i === index);
   });
 }
 
-function autoSequence(interval = 4000) {
+function clearSequence(reset = false) {
+  if (timer) {
+    clearTimeout(timer);
+    timer = 0;
+  }
+  if (reset) {
+    index = -1;
+    steps.forEach((step) => step.classList.remove(ACTIVE_CLASS));
+  }
+}
+
+function queueNext() {
+  clearSequence();
+  if (!inView || reduceMotion || steps.length <= 1) return;
+  timer = window.setTimeout(() => {
+    const next = (index + 1) % steps.length;
+    highlightStep(next);
+    queueNext();
+  }, STEP_INTERVAL);
+}
+
+function handleEnterView() {
+  if (inView) return;
+  inView = true;
   if (!steps.length) return;
-  clearInterval(timer);
-  timer = setInterval(() => {
-    current = (current + 1) % steps.length;
-    activateStep(current);
-  }, interval);
+
+  if (reduceMotion) {
+    highlightStep(0);
+    return;
+  }
+
+  highlightStep(0);
+  queueNext();
+}
+
+function handleExitView() {
+  inView = false;
+  clearSequence(true);
+}
+
+function attachManualControls() {
+  steps.forEach((step, i) => {
+    step.addEventListener("mouseenter", () => {
+      if (reduceMotion) return;
+      clearSequence();
+      highlightStep(i);
+    });
+    step.addEventListener("mouseleave", () => {
+      if (reduceMotion || !inView) return;
+      queueNext();
+    });
+    step.addEventListener("focusin", () => {
+      if (reduceMotion) return;
+      clearSequence();
+      highlightStep(i);
+    });
+    step.addEventListener("focusout", () => {
+      if (reduceMotion || !inView) return;
+      queueNext();
+    });
+  });
 }
 
 export function initProcessFlow() {
-  steps = qsa(".process-step");
+  steps = qsa(STEP_SELECTOR);
   if (!steps.length) return;
 
-  activateStep(0);
-  autoSequence();
+  reduceMotion = prefersReducedMotion();
 
-  // Allow manual hover/focus override
-  steps.forEach((step, i) => {
-    step.addEventListener("mouseenter", () => {
-      clearInterval(timer);
-      activateStep(i);
+  if (reduceMotion) {
+    highlightStep(0);
+    return;
+  }
+
+  attachManualControls();
+
+  const container = steps[0].closest(".process-steps");
+  if (!container) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        handleEnterView();
+      } else {
+        handleExitView();
+      }
     });
-    step.addEventListener("mouseleave", () => autoSequence());
-    step.addEventListener("focusin", () => {
-      clearInterval(timer);
-      activateStep(i);
-    });
-    step.addEventListener("focusout", () => autoSequence());
-  });
+  }, { threshold: 0.35 });
+
+  observer.observe(container);
 }

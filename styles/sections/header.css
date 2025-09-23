@@ -134,7 +134,7 @@
   }
   
   /* If you’re using the sequential underline utility, we hook it here */
-  .nav__link.u-underline::after {
+  .nav__link:where(.u-underline, [data-underline])::after {
     /* u-underline base is in effects.css; we only adjust size/offsets */
     bottom: 6px;
     height: 2px;
@@ -414,8 +414,8 @@
   .nav__link[aria-current="page"] {
     color: var(--ss-text);
   }
-  .nav__link[data-active="true"].u-underline::after,
-  .nav__link[aria-current="page"].u-underline::after {
+  .nav__link[data-active="true"]:where(.u-underline, [data-underline])::after,
+  .nav__link[aria-current="page"]:where(.u-underline, [data-underline])::after {
     opacity: 1;
     transform: scaleX(1);
   }

@@ -1,46 +1,68 @@
 // /scripts/modules/portfolioHover.js
 // Work cards filtering + hover-play videos
 
-import { qs, qsa } from "../utils/dom.js";
+import { qsa, prefersReducedMotion } from "../utils/dom.js";
+
+const reduceMotion = () => prefersReducedMotion();
 
 function handleFilterClick(e) {
   const btn = e.currentTarget;
-  const category = btn.dataset.category;
+  const category = (btn.dataset.filter || btn.dataset.category || "all").toLowerCase();
 
-  // Toggle aria-pressed
-  qsa(".work-filter [aria-pressed]").forEach((b) =>
-    b.setAttribute("aria-pressed", "false")
-  );
-  btn.setAttribute("aria-pressed", "true");
+  const siblings = qsa(".filters [role='tab']");
+  siblings.forEach((b) => b.setAttribute("aria-selected", String(b === btn)));
 
-  // Show/hide cards
   qsa(".work-card").forEach((card) => {
-    const match = category === "all" || card.dataset.category === category;
+    const raw = (card.dataset.category || card.dataset.tags || "").toLowerCase();
+    const tags = raw.split(/\s+/).filter(Boolean);
+    const match = category === "all" || tags.includes(category);
     card.classList.toggle("is-hidden", !match);
   });
 }
 
 function enableVideoHover(card) {
-  const video = card.querySelector("video");
+  const video = card.querySelector("video[data-hover-video]");
   if (!video) return;
 
+  const motionReduced = reduceMotion();
+  let loaded = false;
+
+  const prepare = () => {
+    if (loaded) return;
+    const src = video.dataset.hoverVideo;
+    if (!src) return;
+    video.src = src;
+    video.load();
+    loaded = true;
+  };
+
   const play = () => {
+    if (motionReduced) return;
+    prepare();
+    if (!loaded) return;
+    video.muted = true;
+    video.playsInline = true;
+    video.currentTime = 0;
     video.play().catch(() => {});
   };
-  const pause = () => video.pause();
 
-  card.addEventListener("mouseenter", play);
+  const stop = () => {
+    if (!loaded) return;
+    video.pause();
+    video.currentTime = 0;
+  };
+
+  card.addEventListener("pointerenter", play);
   card.addEventListener("focusin", play);
-  card.addEventListener("mouseleave", pause);
-  card.addEventListener("focusout", pause);
+  card.addEventListener("pointerleave", stop);
+  card.addEventListener("pointercancel", stop);
+  card.addEventListener("focusout", stop);
 }
 
 export function initPortfolioHover() {
-  // Filter chips
-  qsa(".work-filter [data-category]").forEach((btn) =>
+  qsa(".filters [data-filter], .filters [data-category]").forEach((btn) =>
     btn.addEventListener("click", handleFilterClick)
   );
 
-  // Hover-play videos
   qsa(".work-card").forEach(enableVideoHover);
 }
