@@ -1,184 +1,226 @@
-// /scripts/modules/header.js
-// Accessible desktop navigation highlights + mobile full-screen menu with focus trapping
+// scripts/modules/header.js
+// SwiftSendMax 1.0 — Header behavior (vanilla ES module)
+// - Mobile full-screen dialog with focus trap
+// - A11y-first: aria-expanded / aria-hidden / inert, ESC-to-close, focus restore
+// - Perf: passive listeners, rAF scroll shadow, no globals leaked
+// - Idempotent: safe to call multiple times
 
 import { qs, qsa, addClass, removeClass, rafQueue } from "../utils/dom.js";
 
-const ACTIVE_OFFSET = 120;
-let toggleButton;
-let mobileMenu;
-let previousFocus = null;
-let focusableEls = [];
-let firstFocusable;
-let lastFocusable;
+let _wired = false;
 
-function computeActiveSectionId() {
-  const sections = qsa("main section[id]");
-  if (!sections.length) return null;
+// ===== constants =====
+const HEADER_SEL = ".header";
+const BODY_LOCK_CLASS = "is-locked";
+const DIALOG_ID = "#mobileMenu";
+const OPENER_SEL = ".menu-toggle[data-open-menu]";
+const CLOSE_SEL = "[data-close-menu]";
+const PAGE_BODY_SEL = "body.ss-body";
+const PAGE_MAIN_SEL = "#mainContent";
+const SCROLL_SHADOW_THRESHOLD = 8;
+const FOCUSABLE_SEL =
+  "a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])";
 
-  const scrollY = window.scrollY + ACTIVE_OFFSET;
-  let currentId = sections[0].id;
+export default function initHeader() {
+  if (_wired) return;
+  _wired = true;
 
-  for (const section of sections) {
-    if (section.offsetTop <= scrollY) {
-      currentId = section.id;
+  // Elements (guard everything)
+  const header = qs(HEADER_SEL);
+  const body = qs(PAGE_BODY_SEL) || document.body;
+  const main = qs(PAGE_MAIN_SEL) || qs("main");
+  const opener = qs(OPENER_SEL);
+  const dialog = qs(`${DIALOG_ID}.mobile-menu[role="dialog"][aria-modal="true"]`);
+
+  // Always wire scroll shadow (even if menu pieces are missing)
+  wireScrollShadow(header);
+
+  if (!opener || !dialog) return; // nothing else to wire
+
+  // State
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let lastFocusedBeforeOpen = null;
+  let focusables = [];
+  let firstFocusable = null;
+  let lastFocusable = null;
+  let escAndTrapBound = false;
+
+  // Ensure dialog starts closed/inert (in case markup slipped)
+  setDialogState({ open: dialog.getAttribute("aria-hidden") === "false" ? false : false });
+
+  // ===== open/close/toggle =====
+  function openMenu() {
+    if (isOpen()) return;
+    lastFocusedBeforeOpen =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    setDialogState({ open: true });
+
+    // Focus trap: compute once on open
+    computeFocusables();
+    if (firstFocusable) {
+      // preventScroll to avoid layout thrash
+      firstFocusable.focus({ preventScroll: true });
+    }
+
+    // One keydown handler for ESC + TAB trap while open
+    if (!escAndTrapBound) {
+      document.addEventListener("keydown", onKeydownWhileOpen, { capture: true });
+      escAndTrapBound = true;
+    }
+
+    // Close on window hash route changes (anchor nav)
+    window.addEventListener("hashchange", closeMenu, { once: true });
+
+    // Optional: if viewport radically changes, close (avoids layout jumps)
+    window.addEventListener("resize", closeMenu, { once: true });
+
+    // On open we announce state to CSS for animations
+    dialog.dataset.state = "open";
+  }
+
+  function closeMenu() {
+    if (!isOpen()) return;
+    setDialogState({ open: false });
+
+    // Release keydown handler
+    if (escAndTrapBound) {
+      document.removeEventListener("keydown", onKeydownWhileOpen, { capture: true });
+      escAndTrapBound = false;
+    }
+
+    // Restore focus to prior element or opener
+    const target =
+      (lastFocusedBeforeOpen && document.contains(lastFocusedBeforeOpen) && lastFocusedBeforeOpen) ||
+      opener;
+    if (target) target.focus({ preventScroll: true });
+    lastFocusedBeforeOpen = null;
+
+    // Announce state for CSS
+    dialog.dataset.state = "closed";
+  }
+
+  function toggleMenu() {
+    isOpen() ? closeMenu() : openMenu();
+  }
+
+  function isOpen() {
+    return dialog.getAttribute("aria-hidden") === "false";
+  }
+
+  function setDialogState({ open }) {
+    dialog.setAttribute("aria-hidden", String(!open));
+    if (open) {
+      dialog.removeAttribute("inert");
+      opener.setAttribute("aria-expanded", "true");
+      addClass(body, BODY_LOCK_CLASS);
     } else {
-      break;
+      dialog.setAttribute("inert", "");
+      opener.setAttribute("aria-expanded", "false");
+      removeClass(body, BODY_LOCK_CLASS);
     }
   }
 
-  return currentId;
-}
+  // ===== focus management =====
+  function computeFocusables() {
+    const all = qsa(FOCUSABLE_SEL, dialog).filter((el) => {
+      if (el.hasAttribute("disabled") || el.getAttribute("aria-hidden") === "true") return false;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") return false;
+      // Hidden via details/summary or off-screen
+      const rect = el.getBoundingClientRect();
+      return !(rect.width === 0 && rect.height === 0);
+    });
+    focusables = all;
+    firstFocusable = focusables[0] || null;
+    lastFocusable = focusables[focusables.length - 1] || null;
+  }
 
-function updateActiveLinks() {
-  const currentId = computeActiveSectionId();
-  if (!currentId) return;
+  function onKeydownWhileOpen(e) {
+    // ESC anywhere closes
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeMenu();
+      return;
+    }
+    // TAB trap
+    if (e.key !== "Tab") return;
+    if (!focusables.length) return;
 
-  qsa(".nav__link, .mobile-menu__link").forEach((link) => {
-    const href = link.getAttribute("href");
-    const isActive = href === `#${currentId}`;
-    link.classList.toggle("is-active", isActive);
-
-    if (isActive) {
-      link.dataset.active = "true";
-      link.setAttribute("aria-current", "page");
+    if (e.shiftKey) {
+      if (document.activeElement === firstFocusable) {
+        e.preventDefault();
+        lastFocusable?.focus();
+      }
     } else {
-      delete link.dataset.active;
-      link.removeAttribute("aria-current");
+      if (document.activeElement === lastFocusable) {
+        e.preventDefault();
+        firstFocusable?.focus();
+      }
+    }
+  }
+
+  // ===== backdrop (outside) clicks =====
+  // Clicking on the dialog backdrop (outside inner content) closes.
+  dialog.addEventListener("pointerdown", (e) => {
+    // If the click originates on the backdrop element itself, close.
+    if (e.target === dialog) {
+      // Delay the actual close until pointerup to avoid selection glitches
+      const onUp = () => {
+        closeMenu();
+        dialog.removeEventListener("pointerup", onUp);
+      };
+      dialog.addEventListener("pointerup", onUp, { once: true });
     }
   });
-}
 
-const markActiveLink = rafQueue(updateActiveLinks);
-
-function setMenuState(open) {
-  if (!mobileMenu || !toggleButton) return;
-
-  toggleButton.setAttribute("aria-expanded", String(open));
-  mobileMenu.setAttribute("aria-hidden", String(!open));
-  toggleButton.classList.toggle("is-active", open);
-  mobileMenu.classList.toggle("is-open", open);
-  document.body.classList.toggle("menu-open", open);
-
-  if (open) {
-    mobileMenu.removeAttribute("inert");
-  } else {
-    mobileMenu.setAttribute("inert", "");
-  }
-}
-
-function onTrapKeydown(event) {
-  if (event.key === "Escape") {
-    closeMenu();
-    return;
-  }
-
-  if (event.key !== "Tab" || focusableEls.length === 0) return;
-
-  if (event.shiftKey) {
-    if (document.activeElement === firstFocusable) {
-      event.preventDefault();
-      lastFocusable.focus();
-    }
-  } else if (document.activeElement === lastFocusable) {
-    event.preventDefault();
-    firstFocusable.focus();
-  }
-}
-
-function trapFocus(container) {
-  focusableEls = qsa(
-    "a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])",
-    container
-  ).filter((el) => !el.hasAttribute("disabled") && el.offsetParent !== null);
-
-  firstFocusable = focusableEls[0];
-  lastFocusable = focusableEls[focusableEls.length - 1];
-
-  container.addEventListener("keydown", onTrapKeydown);
-
-  if (firstFocusable) {
-    firstFocusable.focus({ preventScroll: true });
-  }
-}
-
-function releaseFocus() {
-  if (!mobileMenu) return;
-  mobileMenu.removeEventListener("keydown", onTrapKeydown);
-  focusableEls = [];
-  firstFocusable = null;
-  lastFocusable = null;
-}
-
-function openMenu() {
-  if (mobileMenu?.classList.contains("is-open")) return;
-  previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  setMenuState(true);
-  trapFocus(mobileMenu);
-  window.addEventListener("resize", closeMenu, { once: true });
-}
-
-export function closeMenu() {
-  if (!mobileMenu?.classList.contains("is-open")) return;
-  setMenuState(false);
-  releaseFocus();
-  window.removeEventListener("resize", closeMenu);
-  if (previousFocus) {
-    previousFocus.focus({ preventScroll: true });
-  } else if (toggleButton) {
-    toggleButton.focus({ preventScroll: true });
-  }
-  previousFocus = null;
-}
-
-function handleToggle() {
-  if (mobileMenu?.classList.contains("is-open")) {
-    closeMenu();
-  } else {
-    openMenu();
-  }
-}
-
-function handleScroll() {
-  markActiveLink();
-
-  const header = qs(".header");
-  if (!header) return;
-  if (window.scrollY > 32) {
-    addClass(header, "header--raised");
-  } else {
-    removeClass(header, "header--raised");
-  }
-}
-
-function bindMobileMenu() {
-  toggleButton = qs(".menu-toggle");
-  mobileMenu = qs("#mobileMenu");
-  if (!toggleButton || !mobileMenu) return;
-
-  toggleButton.addEventListener("click", handleToggle);
-
-  qsa("[data-close-menu]").forEach((el) => {
-    el.addEventListener("click", closeMenu);
+  // ===== open/close bindings =====
+  opener.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleMenu();
   });
-}
 
-export function initHeader() {
-  updateActiveLinks();
-  window.addEventListener("scroll", handleScroll, { passive: true });
-  window.addEventListener("resize", markActiveLink);
-  window.addEventListener("hashchange", updateActiveLinks);
-
-  bindMobileMenu();
-
-  if (mobileMenu && !mobileMenu.classList.contains("is-open")) {
-    mobileMenu.setAttribute("inert", "");
-  }
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+  // Delegate all close buttons/links (works for future nodes too)
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    if (target.matches(CLOSE_SEL) || target.closest(CLOSE_SEL)) {
+      // Allow navigation to proceed; just close immediately
       closeMenu();
     }
   });
+
+  // Defensive: if main is clicked while menu open, allow normal behavior.
+  // (No overlay-click-to-close here; backdrop handler above handles it.)
+
+  // ===== reduced motion respect =====
+  if (reduceMotion) {
+    // We don't add JS delays; CSS should already respect prefers-reduced-motion.
+    // This is a placeholder to keep parity if future JS timing is added.
+  }
 }
 
-export default initHeader;
+/* ===== helpers ===== */
+
+function wireScrollShadow(header) {
+  if (!header) return;
+  let ticking = false;
+
+  function updateShadow() {
+    ticking = false;
+    const hasShadow = window.scrollY > SCROLL_SHADOW_THRESHOLD;
+    header.classList.toggle("has-shadow", hasShadow);
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateShadow);
+    }
+  }
+
+  // Initial apply
+  updateShadow();
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
