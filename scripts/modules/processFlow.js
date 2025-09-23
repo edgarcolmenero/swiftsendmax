@@ -1,46 +1,51 @@
 // /scripts/modules/processFlow.js
-// Optional step counters/auto-sequence sync
+// Step cards sequential lighting with optional hover overrides
 
-import { qsa, addClass, removeClass } from "../utils/dom.js";
+import { qsa } from "../utils/dom.js";
 
 let steps = [];
-let current = 0;
-let timer;
+let index = 0;
+let timerId;
+const INTERVAL = 4500;
 
-function activateStep(index) {
+function activate(idx) {
   steps.forEach((step, i) => {
-    if (i === index) addClass(step, "is-active");
-    else removeClass(step, "is-active");
+    const isActive = i === idx;
+    step.classList.toggle("is-active", isActive);
+    step.setAttribute("data-active", String(isActive));
   });
+  index = idx;
 }
 
-function autoSequence(interval = 4000) {
+function startLoop() {
+  clearInterval(timerId);
   if (!steps.length) return;
-  clearInterval(timer);
-  timer = setInterval(() => {
-    current = (current + 1) % steps.length;
-    activateStep(current);
-  }, interval);
+  timerId = setInterval(() => {
+    const next = (index + 1) % steps.length;
+    activate(next);
+  }, INTERVAL);
+}
+
+function bindInteractions(step, idx) {
+  step.addEventListener("mouseenter", () => {
+    clearInterval(timerId);
+    activate(idx);
+  });
+  step.addEventListener("focusin", () => {
+    clearInterval(timerId);
+    activate(idx);
+  });
+  step.addEventListener("mouseleave", startLoop);
+  step.addEventListener("focusout", startLoop);
 }
 
 export function initProcessFlow() {
-  steps = qsa(".process-step");
+  steps = qsa(".step-card");
   if (!steps.length) return;
 
-  activateStep(0);
-  autoSequence();
-
-  // Allow manual hover/focus override
-  steps.forEach((step, i) => {
-    step.addEventListener("mouseenter", () => {
-      clearInterval(timer);
-      activateStep(i);
-    });
-    step.addEventListener("mouseleave", () => autoSequence());
-    step.addEventListener("focusin", () => {
-      clearInterval(timer);
-      activateStep(i);
-    });
-    step.addEventListener("focusout", () => autoSequence());
-  });
+  steps.forEach(bindInteractions);
+  activate(0);
+  startLoop();
 }
+
+export default initProcessFlow;

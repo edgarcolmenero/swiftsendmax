@@ -1,111 +1,159 @@
 // /scripts/modules/header.js
-// Desktop active link sync + mobile full-screen menu toggle with focus trap
+// Accessible desktop navigation highlights + mobile full-screen menu with focus trapping
 
-import { qs, qsa, addClass, removeClass, toggleClass } from "../utils/dom.js";
+import { qs, qsa, addClass, removeClass } from "../utils/dom.js";
 
-let lastActiveLink = null;
-let lastFocusedEl = null;
+const ACTIVE_OFFSET = 120;
+let toggleButton;
+let mobileMenu;
+let previousFocus = null;
+let focusableEls = [];
+let firstFocusable;
+let lastFocusable;
 
-function setActiveLink() {
-  const links = qsa("nav a[href^='#']");
-  const fromTop = window.scrollY + 100;
+function markActiveLink() {
+  const sections = qsa("main section[id]");
+  const scrollY = window.scrollY + ACTIVE_OFFSET;
 
-  links.forEach((link) => {
-    const section = qs(link.getAttribute("href"));
-    if (section && section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-      if (lastActiveLink) lastActiveLink.classList.remove("is-active");
-      link.classList.add("is-active");
-      lastActiveLink = link;
+  let currentId = sections[0]?.id;
+  for (const section of sections) {
+    if (section.offsetTop <= scrollY) {
+      currentId = section.id;
+    } else {
+      break;
+    }
+  }
+
+  qsa(".nav__link").forEach((link) => {
+    const href = link.getAttribute("href");
+    const isActive = href === `#${currentId}`;
+    if (isActive) {
+      link.dataset.active = "true";
+      link.setAttribute("aria-current", "page");
+    } else {
+      delete link.dataset.active;
+      link.removeAttribute("aria-current");
     }
   });
 }
 
-function openMenu() {
-  const body = document.body;
-  const menu = qs(".mobile-menu");
-  const toggle = qs(".menu-toggle");
+function setMenuState(open) {
+  if (!mobileMenu || !toggleButton) return;
 
-  addClass(body, "menu-open");
-  addClass(menu, "is-open");
-  addClass(toggle, "is-active");
-
-  lastFocusedEl = document.activeElement;
-  trapFocus(menu);
-
-  document.addEventListener("keydown", handleEsc);
+  toggleButton.setAttribute("aria-expanded", String(open));
+  mobileMenu.setAttribute("aria-hidden", String(!open));
+  toggleButton.classList.toggle("is-active", open);
+  mobileMenu.classList.toggle("is-open", open);
+  document.body.classList.toggle("menu-open", open);
 }
 
-function closeMenu() {
-  const body = document.body;
-  const menu = qs(".mobile-menu");
-  const toggle = qs(".menu-toggle");
+function onTrapKeydown(event) {
+  if (event.key === "Escape") {
+    closeMenu();
+    return;
+  }
 
-  removeClass(body, "menu-open");
-  removeClass(menu, "is-open");
-  removeClass(toggle, "is-active");
+  if (event.key !== "Tab" || focusableEls.length === 0) return;
 
-  releaseFocus();
-
-  document.removeEventListener("keydown", handleEsc);
-
-  if (lastFocusedEl) lastFocusedEl.focus();
-}
-
-function toggleMenu() {
-  document.body.classList.contains("menu-open") ? closeMenu() : openMenu();
-}
-
-function handleEsc(e) {
-  if (e.key === "Escape") closeMenu();
-}
-
-// Focus trap
-let focusableEls = [];
-let firstEl, lastEl;
-
-function trapFocus(container) {
-  focusableEls = qsa(
-    "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])",
-    container
-  ).filter((el) => !el.disabled && el.offsetParent !== null);
-
-  firstEl = focusableEls[0];
-  lastEl = focusableEls[focusableEls.length - 1];
-
-  container.addEventListener("keydown", handleTab);
-}
-
-function releaseFocus() {
-  const menu = qs(".mobile-menu");
-  if (menu) menu.removeEventListener("keydown", handleTab);
-}
-
-function handleTab(e) {
-  if (e.key !== "Tab") return;
-
-  if (e.shiftKey) {
-    if (document.activeElement === firstEl) {
-      e.preventDefault();
-      lastEl.focus();
+  if (event.shiftKey) {
+    if (document.activeElement === firstFocusable) {
+      event.preventDefault();
+      lastFocusable.focus();
     }
-  } else {
-    if (document.activeElement === lastEl) {
-      e.preventDefault();
-      firstEl.focus();
-    }
+  } else if (document.activeElement === lastFocusable) {
+    event.preventDefault();
+    firstFocusable.focus();
   }
 }
 
-export function initHeader() {
-  // Desktop active link sync
-  window.addEventListener("scroll", setActiveLink);
+function trapFocus(container) {
+  focusableEls = qsa(
+    "a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])",
+    container
+  ).filter((el) => !el.hasAttribute("disabled") && el.offsetParent !== null);
 
-  // Mobile menu toggle
-  const toggle = qs(".menu-toggle");
-  if (toggle) toggle.addEventListener("click", toggleMenu);
+  firstFocusable = focusableEls[0];
+  lastFocusable = focusableEls[focusableEls.length - 1];
 
-  // Close menu on nav link click
-  qsa(".mobile-menu a").forEach((link) =>
-    link.addEventListener("click", closeMenu)
-  );
+  container.addEventListener("keydown", onTrapKeydown);
+
+  if (firstFocusable) {
+    firstFocusable.focus({ preventScroll: true });
+  }
 }
+
+function releaseFocus() {
+  if (!mobileMenu) return;
+  mobileMenu.removeEventListener("keydown", onTrapKeydown);
+  focusableEls = [];
+  firstFocusable = null;
+  lastFocusable = null;
+}
+
+function openMenu() {
+  if (mobileMenu?.classList.contains("is-open")) return;
+  previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  setMenuState(true);
+  trapFocus(mobileMenu);
+  window.addEventListener("resize", closeMenu, { once: true });
+}
+
+export function closeMenu() {
+  if (!mobileMenu?.classList.contains("is-open")) return;
+  setMenuState(false);
+  releaseFocus();
+  window.removeEventListener("resize", closeMenu);
+  if (previousFocus) {
+    previousFocus.focus({ preventScroll: true });
+  } else if (toggleButton) {
+    toggleButton.focus({ preventScroll: true });
+  }
+}
+
+function handleToggle() {
+  if (mobileMenu?.classList.contains("is-open")) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+}
+
+function handleScroll() {
+  markActiveLink();
+
+  const header = qs(".header");
+  if (!header) return;
+  if (window.scrollY > 32) {
+    addClass(header, "header--raised");
+  } else {
+    removeClass(header, "header--raised");
+  }
+}
+
+function bindMobileMenu() {
+  toggleButton = qs(".menu-toggle");
+  mobileMenu = qs("#mobileMenu");
+  if (!toggleButton || !mobileMenu) return;
+
+  toggleButton.addEventListener("click", handleToggle);
+
+  qsa("[data-close-menu]").forEach((el) => {
+    el.addEventListener("click", closeMenu);
+  });
+}
+
+export function initHeader() {
+  markActiveLink();
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addEventListener("resize", markActiveLink);
+
+  bindMobileMenu();
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+    }
+  });
+}
+
+export default initHeader;

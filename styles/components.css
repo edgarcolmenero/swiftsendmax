@@ -127,6 +127,16 @@
   /* Savings estimator */
   .savings h3 { font-size: var(--fs-500); margin-bottom: 8px; }
   .savings .result { font-size: var(--fs-400); }
+
+  /* Play glyph */
+  .icon-play {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid rgba(255,255,255,0.9);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
   
   /* ------- FOOTER FLOATS ------- */
   .footer-float {

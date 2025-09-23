@@ -4,29 +4,25 @@
 import { qsa } from "../utils/dom.js";
 
 function addHoverEffects(el) {
-  el.addEventListener("mouseenter", () => {
-    el.classList.add("is-hovered");
-  });
-  el.addEventListener("mouseleave", () => {
-    el.classList.remove("is-hovered");
-  });
+  const activate = () => el.classList.add("is-hovered");
+  const deactivate = () => el.classList.remove("is-hovered");
+
+  el.addEventListener("mouseenter", activate);
+  el.addEventListener("mouseleave", deactivate);
+  el.addEventListener("focusin", activate);
+  el.addEventListener("focusout", deactivate);
 }
 
-// Optional quick demo launch
-function handleDemoClick(e) {
-  const demoId = e.currentTarget.dataset.demo;
+function handleDemoClick(event) {
+  const demoId = event.currentTarget.dataset.demo;
   if (!demoId) return;
-
-  // Placeholder for demo launch logic
-  console.log(`Launch demo: ${demoId}`);
+  event.preventDefault();
+  console.info(`Launch demo placeholder: ${demoId}`);
 }
 
 export function initLabsGlow() {
-  // Hover effects
-  qsa(".labs-card").forEach(addHoverEffects);
-
-  // Demo launch buttons
-  qsa("[data-demo]").forEach((btn) =>
-    btn.addEventListener("click", handleDemoClick)
-  );
+  qsa(".lab-card").forEach(addHoverEffects);
+  qsa("[data-demo]").forEach((btn) => btn.addEventListener("click", handleDemoClick));
 }
+
+export default initLabsGlow;

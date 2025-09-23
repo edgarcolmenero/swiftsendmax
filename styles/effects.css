@@ -6,20 +6,29 @@
 /* ---------------------------
    1) Sequential Underline
    --------------------------- */
-   @keyframes underline-sweep {
-    0% { right: 100%; }
-    100% { right: 0; }
+  a[data-underline] {
+    position: relative;
+    overflow: hidden;
   }
   a[data-underline]::after {
     content: "";
     position: absolute;
-    left: 0; right: 100%;
-    bottom: -2px; height: 2px;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
     background: linear-gradient(90deg, var(--swift-purple), var(--swift-orange));
+    transform: scaleX(0);
+    transform-origin: calc(var(--underline-origin, .5) * 100%) 50%;
+    transition: transform 260ms var(--ease);
+  }
+  a[data-underline][data-underline-ready="true"]::after {
+    transition: transform 320ms var(--ease);
   }
   a[data-underline]:hover::after,
-  a[data-underline]:focus-visible::after {
-    animation: underline-sweep 320ms var(--ease) forwards;
+  a[data-underline]:focus-visible::after,
+  a[data-underline][data-active="true"]::after {
+    transform: scaleX(1);
   }
   
   /* ---------------------------

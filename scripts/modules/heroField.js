@@ -5,39 +5,65 @@
 import { prefersReducedMotion, rafQueue } from "../utils/dom.js";
 
 let heroEl;
-let handleMove;
+let detachHandlers;
 
-function updateParallax(x, y) {
+function updateParallax(x = 0, y = 0) {
   if (!heroEl) return;
   heroEl.style.setProperty("--px", x.toFixed(3));
   heroEl.style.setProperty("--py", y.toFixed(3));
 }
 
-function onMouseMove(e) {
-  const { innerWidth, innerHeight } = window;
-  const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
-  const y = (e.clientY / innerHeight - 0.5) * 2;
-  updateParallax(x, y);
+function initMouseParallax() {
+  const handleMove = rafQueue((event) => {
+    const { innerWidth, innerHeight } = window;
+    const x = (event.clientX / innerWidth - 0.5) * 2; // -1 to 1
+    const y = (event.clientY / innerHeight - 0.5) * 2;
+    updateParallax(x, y);
+  });
+
+  const reset = () => updateParallax(0, 0);
+
+  window.addEventListener("mousemove", handleMove);
+  window.addEventListener("mouseout", reset);
+
+  detachHandlers = () => {
+    window.removeEventListener("mousemove", handleMove);
+    window.removeEventListener("mouseout", reset);
+  };
 }
 
-function onScroll() {
-  const rect = heroEl.getBoundingClientRect();
-  const midY = rect.top + rect.height / 2;
-  const relY = (midY - window.innerHeight / 2) / window.innerHeight;
-  updateParallax(0, relY);
+function initScrollParallax() {
+  const handleScroll = rafQueue(() => {
+    const rect = heroEl.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    const relativeY = (midpoint - window.innerHeight / 2) / window.innerHeight;
+    updateParallax(0, relativeY);
+  });
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
+
+  detachHandlers = () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
 }
 
 export function initHeroField() {
   heroEl = document.querySelector(".hero.is-parallax");
   if (!heroEl || prefersReducedMotion()) return;
 
-  // Desktop: mousemove parallax
-  if (window.matchMedia("(pointer:fine)").matches) {
-    handleMove = rafQueue(onMouseMove);
-    window.addEventListener("mousemove", handleMove);
+  if (window.matchMedia("(pointer: fine)").matches) {
+    initMouseParallax();
   } else {
-    // Mobile / coarse: scroll-based parallax
-    handleMove = rafQueue(onScroll);
-    window.addEventListener("scroll", handleMove);
+    initScrollParallax();
   }
 }
+
+export function destroyHeroField() {
+  if (typeof detachHandlers === "function") {
+    detachHandlers();
+  }
+  heroEl = null;
+}
+
+export default initHeroField;

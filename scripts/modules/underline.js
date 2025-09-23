@@ -1,31 +1,27 @@
 // /scripts/modules/underline.js
-// Sequential underline animation for links with .u-underline
+// Sequential underline animation for links with [data-underline]
 
 import { qsa } from "../utils/dom.js";
 
-function addUnderlineEffect(link) {
-  const span = document.createElement("span");
-  span.className = "u-underline__line";
-  link.appendChild(span);
+function attachUnderline(link) {
+  const handleMove = (event) => {
+    const rect = link.getBoundingClientRect();
+    const ratio = rect.width ? (event.clientX - rect.left) / rect.width : 0.5;
+    link.style.setProperty("--underline-origin", Math.min(Math.max(ratio, 0), 1).toFixed(3));
+  };
 
-  link.addEventListener("mouseenter", () => {
-    span.classList.add("is-active");
-  });
-  link.addEventListener("mouseleave", () => {
-    span.classList.remove("is-active");
-  });
-  link.addEventListener("focusin", () => {
-    span.classList.add("is-active");
-  });
-  link.addEventListener("focusout", () => {
-    span.classList.remove("is-active");
-  });
+  const reset = () => {
+    link.style.removeProperty("--underline-origin");
+  };
+
+  link.dataset.underlineReady = "true";
+  link.addEventListener("pointermove", handleMove);
+  link.addEventListener("pointerleave", reset);
+  link.addEventListener("blur", reset);
 }
 
 export function initUnderline() {
-  qsa(".u-underline").forEach((link) => {
-    if (!link.querySelector(".u-underline__line")) {
-      addUnderlineEffect(link);
-    }
-  });
+  qsa("[data-underline]").forEach((link) => attachUnderline(link));
 }
+
+export default initUnderline;
