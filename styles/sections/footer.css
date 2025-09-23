@@ -162,7 +162,7 @@
   .contact-row__link{
     text-decoration:none; color: var(--ss-text); font-weight:600;
   }
-  .contact-row__link.u-underline::after{ bottom: 4px; height:2px; }
+  .contact-row__link.u-underline .u-underline__line{ bottom: 4px; height:2px; }
   
   /* ---------- Grid: nav columns ---------- */
   .footer__grid{
@@ -204,7 +204,7 @@
     color: var(--ss-text);
     transform: translateY(-1px);
   }
-  .footer-col__link.u-underline::after{ bottom: 4px; height: 2px; }
+  .footer-col__link.u-underline .u-underline__line{ bottom: 4px; height: 2px; }
   
   /* ---------- Social row ---------- */
   .footer__socials{
@@ -250,7 +250,7 @@
     color: var(--ss-text-dim);
     text-decoration: none;
   }
-  .legal a.u-underline::after{ bottom: 2px; height: 2px; }
+  .legal a.u-underline .u-underline__line{ bottom: 2px; height: 2px; }
   .legal a:hover, .legal a:focus-visible{ color: var(--ss-text); }
   
   /* ---------- Back-to-top (optional) ---------- */

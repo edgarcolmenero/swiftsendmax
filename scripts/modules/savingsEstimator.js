@@ -1,55 +1,89 @@
 // /scripts/modules/savingsEstimator.js
 // Savings Estimator logic: sliders + pills update computed monthly/yearly savings
 
-import { qs, qsa } from "../utils/dom.js";
+import { qsa } from "../utils/dom.js";
 
-function updateValues() {
-  const sliders = qsa(".estimator [type='range']");
-  const pills = qsa(".estimator [data-value]");
+const CARD_FEE_RATE = 0.028; // 2.8% typical blended card fee
+const ACH_FEE_RATE = 0.008;  // 0.8% ACH processing estimate
 
-  let base = 0;
+function formatCurrency(value) {
+  const rounded = Math.round(value);
+  return `$${rounded.toLocaleString()}`;
+}
 
-  sliders.forEach((slider) => {
-    base += parseInt(slider.value, 10) || 0;
-  });
+function parseValue(input, fallback = 0) {
+  if (!input) return fallback;
+  const val = parseInt(input.value, 10);
+  return Number.isFinite(val) ? val : fallback;
+}
 
-  pills.forEach((pill) => {
+function updateEstimator(root) {
+  const volumeSlider = root.querySelector("[data-estimator='volume']");
+  const ticketSlider = root.querySelector("[data-estimator='ticket']");
+  const shiftSlider = root.querySelector("[data-estimator='shift']");
+
+  const monthlyVolume = parseValue(volumeSlider);
+  const ticket = parseValue(ticketSlider, 1);
+  const shiftPercent = parseValue(shiftSlider);
+  const adoptionRate = Math.min(Math.max(shiftPercent, 0), 100) / 100;
+
+  const transactions = ticket > 0 ? Math.round(monthlyVolume / ticket) : 0;
+  const achVolume = monthlyVolume * adoptionRate;
+  const baseSavings = achVolume * (CARD_FEE_RATE - ACH_FEE_RATE);
+
+  let monthlySavings = baseSavings;
+  qsa("[data-value]", root).forEach((pill) => {
     if (pill.getAttribute("aria-pressed") === "true") {
-      base += parseInt(pill.dataset.value, 10) || 0;
+      monthlySavings += parseInt(pill.dataset.value, 10) || 0;
     }
   });
 
-  const monthly = base;
-  const yearly = monthly * 12;
+  const yearlySavings = monthlySavings * 12;
 
-  const valEl = qs(".estimator__value");
-  if (valEl) valEl.textContent = `$${monthly.toLocaleString()}/mo`;
+  const outputs = {
+    volume: root.querySelector("[data-output='volume']"),
+    ticket: root.querySelector("[data-output='ticket']"),
+    shift: root.querySelector("[data-output='shift']"),
+    transactions: root.querySelector("[data-output='transactions']"),
+    achVolume: root.querySelector("[data-output='achVolume']"),
+    cardOffset: root.querySelector("[data-output='cardOffset']"),
+  };
 
-  const yearEl = qs(".estimator__yearly");
-  if (yearEl) yearEl.textContent = `$${yearly.toLocaleString()}/yr`;
+  if (outputs.volume) outputs.volume.textContent = formatCurrency(monthlyVolume);
+  if (outputs.ticket) outputs.ticket.textContent = formatCurrency(ticket);
+  if (outputs.shift) outputs.shift.textContent = `${shiftPercent}%`;
+  if (outputs.transactions) outputs.transactions.textContent = transactions.toLocaleString();
+  if (outputs.achVolume) outputs.achVolume.textContent = formatCurrency(achVolume);
+  if (outputs.cardOffset) outputs.cardOffset.textContent = formatCurrency(baseSavings);
+
+  const monthlyEl = root.querySelector("[data-result='monthly']");
+  const yearlyEl = root.querySelector("[data-result='yearly']");
+  if (monthlyEl) monthlyEl.textContent = `${formatCurrency(monthlySavings)}/mo`;
+  if (yearlyEl) yearlyEl.textContent = `${formatCurrency(yearlySavings)}/yr`;
 }
 
-function handleSlider(e) {
-  const out = e.target.nextElementSibling;
-  if (out) out.textContent = e.target.value;
-  updateValues();
+function handleSliderInput(root) {
+  return () => updateEstimator(root);
 }
 
-function handlePillClick(e) {
-  const btn = e.currentTarget;
-  const pressed = btn.getAttribute("aria-pressed") === "true";
-  btn.setAttribute("aria-pressed", String(!pressed));
-  updateValues();
+function handlePillClick(root, pill) {
+  return () => {
+    const pressed = pill.getAttribute("aria-pressed") === "true";
+    pill.setAttribute("aria-pressed", String(!pressed));
+    updateEstimator(root);
+  };
 }
 
 export function initSavingsEstimator() {
-  qsa(".estimator [type='range']").forEach((slider) =>
-    slider.addEventListener("input", handleSlider)
-  );
+  qsa(".estimator").forEach((estimator) => {
+    qsa("[data-estimator]", estimator).forEach((slider) => {
+      slider.addEventListener("input", handleSliderInput(estimator));
+    });
 
-  qsa(".estimator [data-value]").forEach((pill) =>
-    pill.addEventListener("click", handlePillClick)
-  );
+    qsa("[data-value]", estimator).forEach((pill) => {
+      pill.addEventListener("click", handlePillClick(estimator, pill));
+    });
 
-  updateValues();
+    updateEstimator(estimator);
+  });
 }

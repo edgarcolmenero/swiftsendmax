@@ -134,8 +134,7 @@
   }
   
   /* If you’re using the sequential underline utility, we hook it here */
-  .nav__link.u-underline::after {
-    /* u-underline base is in effects.css; we only adjust size/offsets */
+  .nav__link.u-underline .u-underline__line {
     bottom: 6px;
     height: 2px;
   }
@@ -144,9 +143,11 @@
   .nav__link.is-active {
     color: var(--ss-text);
   }
-  .nav__link.is-active::after {
+  .nav__link.is-active .u-underline__line,
+  .nav__link[aria-current="page"] .u-underline__line,
+  .nav__link[data-active="true"] .u-underline__line {
+    right: 0;
     opacity: 1;
-    transform: scaleX(1);
   }
   
   /* Optional subtle pill hover (no background on rest state) */
@@ -414,10 +415,10 @@
   .nav__link[aria-current="page"] {
     color: var(--ss-text);
   }
-  .nav__link[data-active="true"].u-underline::after,
-  .nav__link[aria-current="page"].u-underline::after {
+  .nav__link[data-active="true"] .u-underline__line,
+  .nav__link[aria-current="page"] .u-underline__line {
+    right: 0;
     opacity: 1;
-    transform: scaleX(1);
   }
   
   /* ---------- Utility hooks for integration ---------- */
