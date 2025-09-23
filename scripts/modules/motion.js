@@ -2,21 +2,22 @@
 // Motion utilities: reveal animations and scroll-driven class toggles
 
 import { qsa } from "../utils/dom.js";
-import { observeReveal } from "../utils/observe.js";
-
-function revealElement(el) {
-  el.classList.add("is-revealed");
-}
+import { onEnter } from "../utils/observe.js";
 
 export function initMotion() {
-  // Reveal any element with [data-reveal]
-  qsa("[data-reveal]").forEach((el) => {
-    observeReveal(el, revealElement);
-  });
-
-  // Scroll-driven motion hooks
   qsa("[data-motion]").forEach((el) => {
-    const cls = el.dataset.motion;
-    observeReveal(el, () => el.classList.add(cls));
+    const motionClass = el.dataset.motion;
+    onEnter(
+      el,
+      () => {
+        if (motionClass) {
+          el.classList.add(motionClass);
+        }
+        el.classList.add("is-motion-active");
+      },
+      { once: true }
+    );
   });
 }
+
+export default initMotion;

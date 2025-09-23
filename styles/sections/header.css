@@ -3,7 +3,9 @@
    Non-sticky translucent gradient header with mobile dropdown
    ========================================= */
 
-.ss-header {
+/* Map to both legacy (.ss-header) and live (.header) roots */
+.ss-header,
+.header {
   --header-alpha: 0.68;
   position: relative;
   z-index: 50;
@@ -22,14 +24,17 @@
     backdrop-filter var(--dur-base) var(--ease);
 }
 
-.ss-header.header-fade {
+/* Support both class names for the subtle fade/elevation */
+.ss-header.header-fade,
+.header.has-shadow {
   --header-alpha: 0.32;
   border-bottom-color: rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
-.ss-header .container.header-row {
+.ss-header .container.header-row,
+.header .container.header-row {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -111,7 +116,9 @@
   border-radius: inherit;
 }
 
-.hamburger {
+/* Map styles to both .hamburger and the live opener .menu-toggle[data-open-menu] */
+.hamburger,
+.menu-toggle[data-open-menu] {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -129,7 +136,8 @@
   cursor: pointer;
 }
 
-.hamburger span {
+.hamburger span,
+.menu-toggle[data-open-menu] span {
   display: block;
   width: 20px;
   height: 2px;
@@ -138,26 +146,31 @@
   transition: transform var(--dur-quick) var(--ease), opacity var(--dur-quick) var(--ease);
 }
 
-.hamburger:where(:hover, :focus-visible) {
+.hamburger:where(:hover, :focus-visible),
+.menu-toggle[data-open-menu]:where(:hover, :focus-visible) {
   transform: translateY(-1px);
   border-color: rgba(255, 255, 255, 0.32);
   background: rgba(255, 255, 255, 0.1);
 }
 
-.hamburger[aria-expanded="true"] span:nth-child(1) {
+/* Expanded visual (hamburger to X) */
+.hamburger[aria-expanded="true"] span:nth-child(1),
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-
-.hamburger[aria-expanded="true"] span:nth-child(2) {
+.hamburger[aria-expanded="true"] span:nth-child(2),
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
   opacity: 0;
 }
-
-.hamburger[aria-expanded="true"] span:nth-child(3) {
+.hamburger[aria-expanded="true"] span:nth-child(3),
+.menu-toggle[aria-expanded="true"] span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ---------- Mobile menu overlay ---------- */
-.ss-mobile-menu {
+/* Map to both legacy and live menu containers */
+.ss-mobile-menu,
+#mobileMenu.mobile-menu[role="dialog"][aria-modal="true"] {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -175,12 +188,15 @@
   transition: opacity var(--dur-base) var(--ease);
 }
 
-.ss-mobile-menu[aria-hidden="false"] {
+.ss-mobile-menu[aria-hidden="false"],
+#mobileMenu.mobile-menu[aria-hidden="false"] {
   opacity: 1;
   pointer-events: auto;
 }
 
-.ss-mobile-menu__inner {
+/* Inner content (support both class names) */
+.ss-mobile-menu__inner,
+.mobile-menu__inner {
   width: min(94vw, 420px);
   display: grid;
   gap: clamp(20px, 5vw, 32px);
@@ -192,7 +208,10 @@
   position: relative;
 }
 
-.ss-menu-close {
+/* Close button (map utility + attribute hook) */
+.ss-menu-close,
+.mobile-menu__close,
+[data-close-menu].ss-menu-close {
   position: absolute;
   top: clamp(12px, 3vw, 18px);
   right: clamp(12px, 3vw, 18px);
@@ -210,7 +229,9 @@
   transition: transform var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease);
 }
 
-.ss-menu-close:where(:hover, :focus-visible) {
+.ss-menu-close:where(:hover, :focus-visible),
+.mobile-menu__close:where(:hover, :focus-visible),
+[data-close-menu].ss-menu-close:where(:hover, :focus-visible) {
   transform: translateY(-1px);
   border-color: rgba(255, 255, 255, 0.32);
 }
@@ -221,7 +242,9 @@
   margin-top: clamp(24px, 5vw, 36px);
 }
 
-.ss-mobile-link {
+/* Links inside mobile menu (support both class names) */
+.ss-mobile-link,
+.mobile-menu__link {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -240,17 +263,20 @@
     background var(--dur-quick) var(--ease);
 }
 
-.ss-mobile-link:where(:hover, :focus-visible) {
+.ss-mobile-link:where(:hover, :focus-visible),
+.mobile-menu__link:where(:hover, :focus-visible) {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.38);
   background: rgba(255, 255, 255, 0.1);
 }
 
-.ss-mobile-link[data-underline]::after {
+.ss-mobile-link[data-underline]::after,
+.mobile-menu__link[data-underline]::after {
   bottom: -6px;
   height: 2px;
 }
 
+/* Mobile CTA */
 .ss-mobile-cta {
   display: inline-flex;
   justify-content: center;
@@ -265,7 +291,9 @@
   border-radius: inherit;
 }
 
-body.menu-open {
+/* Scroll lock (support both classes) */
+body.menu-open,
+body.is-locked {
   overflow: hidden;
   touch-action: none;
 }
@@ -280,13 +308,15 @@ body.menu-open {
     display: inline-flex;
   }
 
-  .hamburger {
+  .hamburger,
+  .menu-toggle[data-open-menu] {
     display: none;
   }
 }
 
 @media (max-width: 640px) {
-  .ss-header .container.header-row {
+  .ss-header .container.header-row,
+  .header .container.header-row {
     gap: var(--space-3);
     padding-block: 16px;
   }
@@ -294,12 +324,19 @@ body.menu-open {
 
 @media (prefers-reduced-motion: reduce) {
   .ss-header,
+  .header,
   .ss-mobile-menu,
+  #mobileMenu.mobile-menu,
   .ss-mobile-menu__inner,
+  .mobile-menu__inner,
   .ss-mobile-link,
+  .mobile-menu__link,
   .hamburger,
+  .menu-toggle[data-open-menu],
   .header-cta,
-  .ss-menu-close {
+  .ss-menu-close,
+  .mobile-menu__close {
     transition: none !important;
   }
 }
+

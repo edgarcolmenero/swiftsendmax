@@ -1,259 +1,214 @@
-// /scripts/modules/portfolioHover.js
-// Portfolio filters + hover/focus video previews with keyboard support.
+// scripts/modules/portfolioHover.js
+// SwiftSendMax 1.0 — Portfolio filters + hover/focus video previews (vanilla ES module)
+// A11y-first: radio-like filter chips with roving focus, aria-selected/checked,
+// keyboard arrows/Home/End, and proper aria-hidden/hidden on cards.
+// Perf: event delegation, minimal DOM reads, guards, no polling, no global leaks.
 
-import { qs, qsa } from "../utils/dom.js";
+import { qs, qsa, prefersReducedMotion } from "../utils/dom.js";
 
-const FILTER_SELECTOR = ".work-filter [data-filter]";
+let _wired = false;
+
+// Support both historical selector shapes used in the project
+const FILTER_CONTAINER_SEL = ".work__filters, .work-filter";
+const FILTER_BTN_SEL = "[role='radio'], [data-filter]";
 const CARD_SELECTOR = ".work-card";
-const GRID_SELECTOR = "[data-portfolio-grid]";
-const TRANSITION_FALLBACK_MS = 280;
 
-const cardControls = new WeakMap();
-const hideHandlers = new WeakMap();
-const hideTimers = new WeakMap();
-let heightResetTimer = null;
+// Accept multiple possible video hooks
+const VIDEO_SELECTOR = "video, .work-card__video";
 
-function parseTags(card) {
-  return card.dataset.tags ? card.dataset.tags.split(/\s+/).filter(Boolean) : [];
+// Helper: get category value from a filter button
+function getFilterValue(btn) {
+  return (
+    btn?.dataset?.filter ||
+    btn?.getAttribute?.("data-filter") ||
+    btn?.getAttribute?.("aria-label") ||
+    "all"
+  ).toLowerCase();
 }
 
-function stopVideo(card, reset = false) {
-  const controls = cardControls.get(card);
-  if (!controls || typeof controls.pause !== "function") return;
-  controls.pause(reset);
+// Helper: read tags from a card's data-tags
+function getTags(card) {
+  const ds = card?.dataset?.tags || "";
+  return ds.split(/\s+/).filter(Boolean);
 }
 
-function enableVideoHover(card) {
-  const video = card.querySelector(".work-card__video");
-  if (!video) return null;
-
-  const loadVideo = () => {
-    if (video.dataset.hoverLoaded === "true") return;
-    const src = video.dataset.hoverSrc || video.dataset.hoverVideo;
-    if (src && !video.src) {
-      video.src = src;
-      video.dataset.hoverLoaded = "true";
-    }
-  };
-
-  const attemptPlay = () => {
-    loadVideo();
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {});
-    }
-  };
-
-  const pause = (resetTime = false) => {
-    video.pause();
-    if (resetTime) {
-      try {
-        video.currentTime = 0;
-      } catch (err) {
-        /* no-op */
-      }
-    }
-  };
-
-  const handleEnter = () => attemptPlay();
-  const handleLeave = () => pause(false);
-
-  card.addEventListener("mouseenter", handleEnter);
-  card.addEventListener("focusin", handleEnter);
-  card.addEventListener("mouseleave", handleLeave);
-  card.addEventListener("focusout", handleLeave);
-
-  return {
-    pause,
-  };
-}
-
-function lockGridHeight(grid) {
-  if (!grid) return () => {};
-  const currentHeight = grid.offsetHeight;
-  grid.style.minHeight = `${currentHeight}px`;
-  if (heightResetTimer) {
-    window.clearTimeout(heightResetTimer);
-  }
-  return () => {
-    heightResetTimer = window.setTimeout(() => {
-      grid.style.minHeight = "";
-    }, TRANSITION_FALLBACK_MS + 80);
-  };
-}
-
-function showCard(card) {
-  const pendingHandler = hideHandlers.get(card);
-  if (pendingHandler) {
-    card.removeEventListener("transitionend", pendingHandler);
-    hideHandlers.delete(card);
-  }
-
-  const pendingTimer = hideTimers.get(card);
-  if (pendingTimer) {
-    window.clearTimeout(pendingTimer);
-    hideTimers.delete(card);
-  }
-
-  card.classList.remove("is-hidden", "is-fading-out");
-  card.setAttribute("aria-hidden", "false");
-  card.tabIndex = 0;
-  card.classList.add("is-activating");
-  requestAnimationFrame(() => {
-    card.classList.remove("is-activating");
-  });
-}
-
-function hideCard(card) {
-  if (card.classList.contains("is-hidden")) return;
-  card.classList.add("is-fading-out");
-  card.setAttribute("aria-hidden", "true");
-  card.tabIndex = -1;
-  card.classList.remove("is-activating");
-
-  const finish = () => {
-    card.classList.add("is-hidden");
-    card.classList.remove("is-fading-out");
-    hideHandlers.delete(card);
-    const timer = hideTimers.get(card);
-    if (timer) {
-      window.clearTimeout(timer);
-      hideTimers.delete(card);
-    }
-  };
-
-  let completed = false;
-  const handle = (event) => {
-    if (event.propertyName !== "opacity") return;
-    completed = true;
-    card.removeEventListener("transitionend", handle);
-    finish();
-  };
-
-  card.addEventListener("transitionend", handle);
-  hideHandlers.set(card, handle);
-
-  const timeoutId = window.setTimeout(() => {
-    if (completed) return;
-    card.removeEventListener("transitionend", handle);
-    finish();
-  }, TRANSITION_FALLBACK_MS);
-  hideTimers.set(card, timeoutId);
-}
-
-function applyFilter(category, cards, grid) {
-  const releaseHeight = lockGridHeight(grid);
-  const activeFilter = category.toLowerCase();
-
-  cards.forEach((card) => {
-    const tags = parseTags(card);
-    const matches = activeFilter === "all" || tags.includes(activeFilter);
-    if (matches) {
-      showCard(card);
-    } else {
-      stopVideo(card, true);
-      hideCard(card);
-    }
-  });
-
-  releaseHeight();
-}
-
+// Apply active visuals/aria to filter button set
 function setActiveButton(activeBtn, buttons) {
   buttons.forEach((btn) => {
     const isActive = btn === activeBtn;
-    btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    // Support both role=radio and generic buttons
+    if (btn.getAttribute("role") === "radio") {
+      btn.setAttribute("aria-checked", String(isActive));
+    } else {
+      btn.setAttribute("aria-selected", String(isActive));
+    }
     btn.classList.toggle("is-active", isActive);
+    // Roving tabindex for keyboard nav within the group
     btn.tabIndex = isActive ? 0 : -1;
   });
 }
 
-function handleFilterKeydown(event, buttons) {
-  const { key } = event;
-  const currentIndex = buttons.indexOf(event.currentTarget);
-
-  if (key === "ArrowRight" || key === "ArrowDown") {
-    event.preventDefault();
-    const next = buttons[(currentIndex + 1) % buttons.length];
-    next.focus();
-    next.click();
-    return;
-  }
-
-  if (key === "ArrowLeft" || key === "ArrowUp") {
-    event.preventDefault();
-    const next = buttons[(currentIndex - 1 + buttons.length) % buttons.length];
-    next.focus();
-    next.click();
-    return;
-  }
-
-  if (key === "Home") {
-    event.preventDefault();
-    const first = buttons[0];
-    first.focus();
-    first.click();
-    return;
-  }
-
-  if (key === "End") {
-    event.preventDefault();
-    const last = buttons[buttons.length - 1];
-    last.focus();
-    last.click();
-    return;
-  }
-
-  if (key === " " || key === "Enter") {
-    event.preventDefault();
-    event.currentTarget.click();
+// Pause a card’s video (if any). Optionally reset the time.
+function pauseCardVideo(card, resetTime = false) {
+  const video = card.querySelector(VIDEO_SELECTOR);
+  if (!video) return;
+  try {
+    if (!video.paused) video.pause();
+    if (resetTime) video.currentTime = 0;
+  } catch {
+    /* no-op */
   }
 }
 
-export function initPortfolioHover() {
-  const buttons = Array.from(qsa(FILTER_SELECTOR));
-  const cards = Array.from(qsa(CARD_SELECTOR));
-  const grid = qs(GRID_SELECTOR);
+// Lazy-attach video src on first interaction (if data-hover-video/src present)
+function ensureVideoSrc(video) {
+  if (!video) return;
+  if (video.dataset.hoverLoaded === "true") return;
+  const src = video.dataset.hoverSrc || video.dataset.hoverVideo;
+  if (src && !video.src) {
+    video.src = src;
+    video.dataset.hoverLoaded = "true";
+  }
+}
 
-  if (!cards.length) return;
+// Play on hover/focus (respect reduced motion)
+function playCardVideo(card) {
+  const video = card.querySelector(VIDEO_SELECTOR);
+  if (!video) return;
+  ensureVideoSrc(video);
+  if (prefersReducedMotion()) return;
+  const p = video.play?.();
+  if (p && typeof p.catch === "function") p.catch(() => {});
+}
+
+// Filter logic: show/hide cards by tag, a11y attributes aligned
+function applyFilter(category, cards) {
+  const cat = (category || "all").toLowerCase();
 
   cards.forEach((card) => {
-    if (!card.hasAttribute("tabindex")) {
-      card.tabIndex = 0;
-    }
-    card.setAttribute("aria-hidden", "false");
-    const controls = enableVideoHover(card);
-    if (controls) {
-      cardControls.set(card, controls);
+    const tags = getTags(card);
+    const match = cat === "all" || tags.includes(cat);
+
+    // Visibility + a11y
+    card.classList.toggle("is-hidden", !match);
+    card.setAttribute("aria-hidden", String(!match));
+    // Mirror semantic "hidden" for assistive tech / tab stops
+    if (!match) {
+      card.setAttribute("hidden", "");
+      card.tabIndex = -1;
+      // Stop preview if card is removed from view
+      pauseCardVideo(card, true);
+    } else {
+      card.removeAttribute("hidden");
+      if (!card.hasAttribute("tabindex")) card.tabIndex = 0;
+      else if (card.tabIndex < 0) card.tabIndex = 0;
     }
   });
+}
 
-  if (!buttons.length) {
+// Keyboard support for filter chips (arrow keys, Home/End, Space/Enter)
+function handleFilterKeydown(event, buttons) {
+  const { key, currentTarget } = event;
+  const i = buttons.indexOf(currentTarget);
+  if (i < 0) return;
+
+  let next = i;
+  if (key === "ArrowRight" || key === "ArrowDown") next = (i + 1) % buttons.length;
+  else if (key === "ArrowLeft" || key === "ArrowUp") next = (i - 1 + buttons.length) % buttons.length;
+  else if (key === "Home") next = 0;
+  else if (key === "End") next = buttons.length - 1;
+  else if (key === " " || key === "Enter") {
+    event.preventDefault();
+    currentTarget.click();
     return;
+  } else return;
+
+  event.preventDefault();
+  const btn = buttons[next];
+  btn?.focus();
+  btn?.click();
+}
+
+// Enhance a single card for hover/focus previews
+function enhanceCardPreview(card) {
+  const onEnter = () => playCardVideo(card);
+  const onLeave = () => pauseCardVideo(card, false);
+
+  // Pointer + keyboard focus
+  card.addEventListener("mouseenter", onEnter);
+  card.addEventListener("focusin", onEnter);
+  card.addEventListener("mouseleave", onLeave);
+  card.addEventListener("focusout", onLeave);
+}
+
+// Public init — idempotent
+export function initPortfolioHover() {
+  if (_wired) return;
+  _wired = true;
+
+  // Cards
+  const cards = Array.from(qsa(CARD_SELECTOR));
+  if (cards.length) {
+    cards.forEach((card) => {
+      // Ensure base a11y state
+      if (!card.hasAttribute("tabindex")) card.tabIndex = 0;
+      card.setAttribute("aria-hidden", "false");
+      enhanceCardPreview(card);
+    });
+
+    // Pause videos if tab is hidden
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) cards.forEach((c) => pauseCardVideo(c, true));
+    });
   }
 
-  buttons.forEach((btn) => {
-    if (!btn.hasAttribute("type")) {
-      btn.type = "button";
-    }
-    btn.tabIndex = btn.getAttribute("aria-selected") === "true" ? 0 : -1;
-    btn.addEventListener("click", () => {
-      setActiveButton(btn, buttons);
-      applyFilter(btn.dataset.filter || "all", cards, grid);
+  // Filters (support either container selector)
+  const filterContainer = qs(FILTER_CONTAINER_SEL);
+  const buttons = filterContainer ? Array.from(filterContainer.querySelectorAll(FILTER_BTN_SEL)) : [];
+
+  if (buttons.length) {
+    // Initialize buttons: ensure type=button and roving tabindex
+    buttons.forEach((btn) => {
+      if (!btn.hasAttribute("type")) btn.type = "button";
+      // If markup already marks one active, keep it; else first becomes active
+      const isSelected =
+        btn.getAttribute("aria-checked") === "true" || btn.getAttribute("aria-selected") === "true";
+      btn.tabIndex = isSelected ? 0 : -1;
     });
-    btn.addEventListener("keydown", (event) => handleFilterKeydown(event, buttons));
-  });
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      cards.forEach((card) => stopVideo(card, true));
+    // Find initially active or default to first
+    const initial =
+      buttons.find(
+        (b) => b.getAttribute("aria-checked") === "true" || b.getAttribute("aria-selected") === "true"
+      ) || buttons[0];
+
+    if (initial) {
+      setActiveButton(initial, buttons);
+      applyFilter(getFilterValue(initial), cards);
+    } else {
+      // Fallback: show all
+      applyFilter("all", cards);
     }
-  });
 
-  // Ensure the initial filter state is applied to match the default aria-selected button.
-  const initiallyActive = buttons.find((btn) => btn.getAttribute("aria-selected") === "true") || buttons[0];
-  if (initiallyActive) {
-    setActiveButton(initiallyActive, buttons);
-    applyFilter(initiallyActive.dataset.filter || "all", cards, grid);
+    // Event delegation for clicks (fast, minimal listeners)
+    filterContainer.addEventListener("click", (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest(FILTER_BTN_SEL);
+      if (!btn || !filterContainer.contains(btn)) return;
+
+      setActiveButton(btn, buttons);
+      applyFilter(getFilterValue(btn), cards);
+    });
+
+    // Single keydown handler per button to preserve a11y nav
+    buttons.forEach((btn) => {
+      btn.addEventListener("keydown", (ev) => handleFilterKeydown(ev, buttons));
+    });
+  } else {
+    // No filters in DOM — ensure default visible + previews still work
+    applyFilter("all", cards);
   }
 }
+
+export default initPortfolioHover;
